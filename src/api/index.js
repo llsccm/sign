@@ -19,7 +19,7 @@ requests.interceptors.response.use(
     return res.data
   },
   (err) => {
-    console.log(err)
+    console.log('err',err)
   }
 )
 
