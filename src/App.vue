@@ -143,7 +143,7 @@ export default {
       let res = await getSignDay(token)
       this.$notify({
         title: `${account}`,
-        message:`已签到:${res.data.clockDays}天`,
+        message:`已签到:${res?.data.clockDays}天`,
         duration: 0
       })
     },
