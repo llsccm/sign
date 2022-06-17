@@ -18,7 +18,7 @@
           <el-table :data="tableData" stripe size="medium">
             <el-table-column prop="account" label="游卡账号" width="150"></el-table-column>
             <el-table-column prop="password" label="密码" width="150"></el-table-column>
-            <el-table-column prop="Authenticate" label="token" width="300"></el-table-column>
+            <el-table-column prop="token" label="token" width="300"></el-table-column>
             <el-table-column label="操作">
               <template slot-scope="scope">
                 <el-button size="mini" type="primary"
@@ -40,13 +40,14 @@
         <div class="button">
           <el-button :plain="true" type="info" @click="allInfo">获取信息</el-button>
           <el-button :plain="true" type="info" @click="allSign">签到</el-button>
+          <!-- <el-button :plain="true" type="info" @click="test">test</el-button> -->
         </div>
       </el-col>
       <el-col :span="12">
         <div class="form">
           <el-form :model="user" status-icon label-width="80px" label-position="left" size="mini">
             <el-form-item label="账号" prop="account">
-              <el-input v-model.number="user.account"></el-input>
+              <el-input v-model.trim="user.account"></el-input>
             </el-form-item>
             <el-form-item label="密码" prop="password">
               <el-input type="password" v-model="user.password" autocomplete="off" show-password></el-input>
@@ -71,7 +72,7 @@ export default {
         {
           account: '',
           password: '',
-          Authenticate: '',
+          token: '',
         },
       ],
       user: {
@@ -93,7 +94,7 @@ export default {
         password: row.password,
       })
       if (res?.code == '0') {
-        this.tableData[index].Authenticate = res.data.token
+        this.tableData[index].token = res.data.token
         this.$message({
           message: res?.msg,
           type: 'success',
@@ -169,15 +170,29 @@ export default {
       this.tableData.push({
         account: this.user.account,
         password: this.user.password,
-        Authenticate:'',
+        token:'',
       })
       this.user.account = ''
       this.user.password = ''
     },
-    allSign(){
+    async allSign(){
+      const length = this.tableData.length
+      for(let i = 0; i < length; i++){
+        if (this.tableData[i].token) {
+          const {account,token} = this.tableData[i]
+          await this.wait(this.clock,{account,token})
+        }else{
+          this.$message({
+            message: `${this.tableData[i].account}未登录`,
+            type: 'error',
+          })
+        }
+      }
+    },
+    allInfo(){
       this.tableData.forEach(item => {
-        if (item.Authenticate) {
-          this.clock({token:item.Authenticate,account:item.account})
+        if (item.token) {
+          this.info({token:item.token,account:item.account})
         }else{
           this.$message({
             message: `${item.account}未登录`,
@@ -186,17 +201,18 @@ export default {
         }
       })
     },
-    allInfo(){
-      this.tableData.forEach(item => {
-        if (item.Authenticate) {
-          this.info({token:item.Authenticate,account:item.account})
-        }else{
-          this.$message({
-            message: `${item.account}未登录`,
-            type: 'error',
-          })
-        }
+    wait(cb,params) {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          // console.log(new Date())
+          resolve(cb(params))
+        }, 1000)
       })
+    },
+    async test(){
+      for (let i = 0; i < 5; i++) {
+        await this.wait(console.log,i)
+      }
     }
   },
 }
