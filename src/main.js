@@ -16,6 +16,7 @@ import {
   Menu,
   MenuItem,
   Link,
+  MessageBox,
 } from 'element-ui'
 // import axios from 'axios'
 
@@ -35,6 +36,7 @@ Vue.use(MenuItem)
 Vue.use(Link)
 Vue.prototype.$message = Message
 Vue.prototype.$notify = Notification
+Vue.prototype.$confirm = MessageBox.confirm
 
 
 new Vue({

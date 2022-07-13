@@ -1,49 +1,57 @@
 <template>
   <div id="app">
-    <el-menu
-      default-active="1"
-      class="el-menu-demo"
-      mode="horizontal"
-      background-color="#545c64"
-      text-color="#fff"
-      active-text-color="#ffd04b">
+    <el-menu default-active="1" class="el-menu-demo" mode="horizontal" background-color="#545c64" text-color="#fff" active-text-color="#ffd04b">
       <el-menu-item index="1">模拟小程序签到</el-menu-item>
       <el-menu-item>
         <el-link href="https://llsccm.github.io/sgstools/" target="_blank" :underline="false">自定义充值</el-link>
       </el-menu-item>
     </el-menu>
     <el-row>
-      <el-col :span="12">
+      <el-col :span="16">
         <div class="table">
           <el-table :data="tableData" stripe size="medium">
             <el-table-column prop="account" label="游卡账号" width="150"></el-table-column>
-            <el-table-column prop="password" label="密码" width="150"></el-table-column>
+            <!-- <el-table-column prop="password" label="密码" width="120"></el-table-column> -->
             <el-table-column prop="token" label="token" width="300"></el-table-column>
+            <el-table-column prop="tid" label="tid" width="100">
+              <template slot-scope="scope">
+                <input type="text" v-model="scope.row.tid" v-show="scope.row.iseditor" />
+                <span v-show="!scope.row.iseditor">{{ scope.row.tid }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="pid" label="pid" width="100">
+              <template slot-scope="scope">
+                <input type="text" v-model="scope.row.pid" v-show="scope.row.iseditor" />
+                <span v-show="!scope.row.iseditor">{{ scope.row.pid }}</span>
+              </template>
+            </el-table-column>
+            <!-- <el-table-column prop="otherTid" label="otherTopic" width="120">
+              <template slot-scope="scope">
+                <input type="text" v-model="scope.row.otherTid" v-show="scope.row.iseditor" />
+                <span v-show="!scope.row.iseditor">{{ scope.row.otherTid }}</span>
+              </template>
+            </el-table-column> -->
             <el-table-column label="操作">
               <template slot-scope="scope">
-                <el-button size="mini" type="primary"
-                  @click="handleLogin(scope.$index, scope.row)">登录</el-button>
-                  <el-button size="mini" type="danger" 
-                  @click="handleDelete(scope.$index)">删除</el-button>
+                <el-button size="mini" type="danger" @click="handleDelete(scope.$index)">删除</el-button>
+                <el-button size="mini" type="primary" @click="handleLogin(scope.$index, scope.row)">登录</el-button>
+                <el-button size="mini" type="warning" @click="handleEdit(scope.row, scope.$index)">{{ editorButton }}</el-button>
+                <el-button size="mini" type="info" @click="handleLike(scope.row)">回帖点赞</el-button>
+                <el-button size="mini" type="info" @click="handleTopic(scope.row)">点赞主题</el-button>
+                <el-button size="mini" type="info" @click="handleReply(scope.row)">回帖</el-button>
               </template>
             </el-table-column>
           </el-table>
         </div>
-          <el-alert
-            title="模拟三国杀ol社区微信小程序签到"
-            type="warning"
-            center
-            show-icon
-            description="token过期时间未知">
-          </el-alert>
-          <el-alert title="使用了无服务器函数，访问接口会有一定的延迟" type="error" center> </el-alert>
+        <el-alert title="模拟三国杀ol社区微信小程序签到" type="warning" center show-icon description="token过期时间未知"> </el-alert>
+        <el-alert title="使用了无服务器函数，访问接口会有一定的延迟" type="error" center> </el-alert>
         <div class="button">
           <el-button :plain="true" type="info" @click="allInfo">获取信息</el-button>
           <el-button :plain="true" type="info" @click="allSign">签到</el-button>
-          <!-- <el-button :plain="true" type="info" @click="test">test</el-button> -->
+          <!-- <el-button :plain="true" type="info" @click="reply">test</el-button> -->
         </div>
       </el-col>
-      <el-col :span="12">
+      <el-col :span="8">
         <div class="form">
           <el-form :model="user" status-icon label-width="80px" label-position="left" size="mini">
             <el-form-item label="账号" prop="account">
@@ -63,7 +71,9 @@
 </template>
 
 <script>
-import { login, getInfo, sign, getSignDay } from './api'
+import { login, getInfo, sign, getSignDay, like, dislike, postlike, postdislike, getVerify, create} from './api'
+import { throttle, debounce } from 'lodash'
+import md5 from 'js-md5'
 export default {
   name: 'App',
   data() {
@@ -73,34 +83,52 @@ export default {
           account: '',
           password: '',
           token: '',
-        },
+          tid: '',
+          pid: '',
+          // otherTid: '',
+          iseditor: false
+        }
       ],
       user: {
         account: '',
-        password: '',
+        password: ''
       },
+      editorButton: '编辑',
+      content:[
+        '迷迷蒙蒙 你给的梦',
+        '出现裂缝 隐隐作痛',
+        '怎么沟通你都没空',
+        '说我不懂 说了没用',
+        '他的笑容 有何不同',
+        '在你心中 我不再受宠',
+        '我的天空 是雨是风',
+        '还是彩虹 你在操纵',
+        '恨自己真的没用',
+        '情绪激动'
+      ],
+      count: 0,
     }
   },
   mounted() {
     // this.clock()
     this.tableData = JSON.parse(localStorage.getItem('user')) || []
   },
-  computed:{
-  },
+  computed: {},
   methods: {
-    async handleLogin(index, row) {
+    async handleLogin(index, row) {//登录
       let res = await login({
         account: row.account,
-        password: row.password,
+        password: row.password
       })
       if (res?.code == '0') {
         this.tableData[index].token = res.data.token
+        this.tableData[index].iseditor = false
         this.$message({
           message: res?.msg,
-          type: 'success',
+          type: 'success'
         })
         localStorage.setItem('user', JSON.stringify(this.tableData))
-      }else{
+      } else {
         this.$notify({
           title: row.account,
           message: res?.msg,
@@ -108,119 +136,220 @@ export default {
         })
       }
     },
-    async info({token, account}) {
+    handleEdit(row, index) {
+      console.log(row)
+      row.iseditor = !row.iseditor
+      // row.pid = 1
+      this.editorButton = row.iseditor ? '保存' : '编辑'
+      if (!row.iseditor) {
+        this.tableData[index] = row
+        localStorage.setItem('user', JSON.stringify(this.tableData))
+      }
+    },
+    async info({ token, account }) {
       let res = await getInfo(token)
       if (res?.code == '0') {
         console.log(res.data)
         this.$notify({
           title: account,
-          message: `${res.data?.old.area}: ${res.data?.old.name}`,
+          message: `${res.data?.old.area}: ${res.data?.old.name}`
           // type: 'success',
         })
       }
     },
-    async clock({account, token}) {
+    async clock({ account, token }) {
       let res = await sign(token)
       if (res?.code == '0') {
         this.$message({
           message: `${res.data.name}, ${res.data.num}`,
-          type: 'success',
+          type: 'success'
         })
-      }else if(res?.code == '1'){
+        this.signDay({ account, token })
+      } else if (res?.code == '1') {
         this.$notify({
           title: account,
-          message:res.msg,
+          message: res.msg,
           duration: 0
         })
-      }else{
+        this.signDay({ account, token })
+      } else {
         this.$message({
           message: res?.msg || '连接异常',
-          type: 'error',
-        }) 
+          type: 'error'
+        })
       }
-      this.signDay({account, token})
     },
-    async signDay({account, token}) {
+    async signDay({ account, token }) {
       let res = await getSignDay(token)
       this.$notify({
         title: `${account}`,
-        message:`已签到:${res?.data.clockDays}天`,
+        message: `已签到:${res?.data.clockDays}天`,
         duration: 0
       })
     },
     handleDelete(index) {
-      this.tableData.splice(index, 1)
-      localStorage.setItem('user', JSON.stringify(this.tableData))
+      this.$confirm('删除该账号, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          this.tableData.splice(index, 1)
+          localStorage.setItem('user', JSON.stringify(this.tableData))
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
     },
     add() {
-      if(this.user.account == '' || this.user.password == ''){
+      if (this.user.account == '' || this.user.password == '') {
         this.$message({
           message: '账号或密码不能为空',
-          type: 'error',
+          type: 'error'
         })
         return
       }
-      if(this.tableData.some(item => item.account == this.user.account)){
+      if (this.tableData.some((item) => item.account == this.user.account)) {
         this.$message({
           message: '账号已存在',
-          type: 'error',
+          type: 'error'
         })
         return
       }
       this.tableData.push({
         account: this.user.account,
         password: this.user.password,
-        token:'',
+        token: ''
       })
       this.user.account = ''
       this.user.password = ''
     },
-    async allSign(){
+    async allSign() {
+      //一键签到所有账号
       const length = this.tableData.length
-      for(let i = 0; i < length; i++){
+      for (let i = 0; i < length; i++) {
         if (this.tableData[i].token) {
-          const {account,token} = this.tableData[i]
-          await this.wait(this.clock,{account,token})
-        }else{
+          const { account, token } = this.tableData[i]
+          await this.wait(this.clock, { account, token })
+        } else {
           this.$message({
             message: `${this.tableData[i].account}未登录`,
-            type: 'error',
+            type: 'error'
           })
         }
       }
     },
-    allInfo(){
-      this.tableData.forEach(item => {
+    allInfo: throttle(function () {
+      this.tableData.forEach((item) => {
         if (item.token) {
-          this.info({token:item.token,account:item.account})
-        }else{
+          this.info({ token: item.token, account: item.account })
+        } else {
           this.$message({
             message: `${item.account}未登录`,
-            type: 'error',
+            type: 'error'
           })
         }
       })
-    },
-    wait(cb,params) {
+    }, 5000),
+    wait(cb, params) {
       return new Promise((resolve) => {
         setTimeout(() => {
           // console.log(new Date())
           resolve(cb(params))
-        }, 1000)
+        }, 4000)
       })
     },
-    async test(){
-      for (let i = 0; i < 5; i++) {
-        await this.wait(console.log,i)
+    test: throttle(function () {
+      console.log('节流')
+    }, 5000),
+    async handleLike(row) {
+      //给别人回复点赞10次
+      let { token, pid, tid } = row
+      this.count = 0
+      while (this.count < 10) {
+        await this.wait(this.likeTask, { token, pid, tid })
       }
+    },
+    async handleTopic(row) {
+      //主题帖点赞5次
+      this.count = 0
+      while (this.count < 5) {
+        await this.wait(this.topicLike, row.token)
+      }
+    },
+    async likeTask({ token, pid, tid }) {
+      // 给别人回帖点赞 
+      let res = await postdislike({ token, pid, tid })
+      if (res?.code == '0' || res?.code == '15006') {
+        let res2 = await postlike({ token, pid, tid })
+        if (res2?.code == '0') {
+          this.count++
+          this.$message({
+            message: `已点赞回帖${this.count}次`,
+            type: 'success'
+          })
+        }
+      }
+    },
+    async topicLike(token) {
+      //主题帖点赞 固定帖子
+      let res = await dislike(token)
+      if (res?.code == '15006' || res?.code == '0') {
+        let res2 = await like(token)
+        console.log('like',res2)
+        if (res2?.code == '0') {
+          this.count++
+          this.$message({
+            message: `已点赞${this.count}次`,
+            type: 'success'
+          })
+        }
+      }
+    },
+    async replyto({token, verify, message}){
+      //回复某帖
+      let res = await create({token, verify, message})
+      if (res?.code == '0') {
+        this.$message({
+          message: res?.data.post.message,
+          type: 'success'
+        })
+        this.count++
+      }
+    },
+    async reply(token) {
+      //回复帖子 固定帖子10次
+      let res = await getVerify(token) //获取safetoken
+      if(res?.code == '0'){
+        let safe = res.data.verify_token
+        while (this.count < 10) {
+          let message = this.content[this.count]
+          let verify = md5(message.length + safe)
+          await this.wait(this.replyto, {token, verify, message})
+        }
+      }
+    },
+    handleReply(row) {
+      this.count = 0
+      this.reply(row.token)
     }
-  },
+  }
 }
 </script>
 
 <style>
 .table {
   margin-left: 50px;
+}
+.table input {
+  width: 80px;
 }
 .button {
   margin-top: 20px;

@@ -1,4 +1,5 @@
 import axios from 'axios'
+
 // import store from '@/store'
 
 let requests = axios.create({
@@ -19,32 +20,71 @@ requests.interceptors.response.use(
     return res.data
   },
   (err) => {
-    console.log('err',err)
+    console.log('err', err)
   }
 )
 
 export const login = ({ account, password }) => requests({
-    url: '/v2/wx/forum/login',
-    method: 'POST',
-    data: {
-      account,
-      password,
-    },
-  })
+  url: '/old/v2/wx/forum/login',
+  method: 'POST',
+  data: {
+    account,
+    password,
+  },
+})
 
 
 export const getInfo = token => requests({
-    url: '/v2/wx/account/info',
-    method: 'GET',
-    headers: { Authenticate: token },
-  })
+  url: '/wx/account/info',
+  method: 'GET',
+  headers: { Authenticate: token },
+})
 export const sign = token => requests({
-    url: '/v2/wx/forum/clock?type=1',
-    method: 'GET',
-    headers: { Authenticate: token },
-  })
+  url: '/wx/forum/clock?type=1',
+  method: 'GET',
+  headers: { Authenticate: token },
+})
 export const getSignDay = token => requests({
-    url: '/v2/wx/forum/clock/days?type=1',
-    headers: { Authenticate: token },
-    method: 'GET',
-  })
+  url: '/wx/forum/clock/days?type=1',
+  headers: { Authenticate: token },
+  method: 'GET',
+})
+export const like = token => requests({
+  url: `/wx/thread/like?tid=1126173`,
+  method: 'GET',
+  headers: { Authenticate: token },
+})
+export const dislike = token => requests({
+  url: `/wx/thread/dislike?tid=1126173`,
+  method: 'GET',
+  headers: { Authenticate: token },
+})
+export const getVerify = token => requests({
+  url: '/wx/thread/token',
+  method: 'POST',
+  headers: { Authenticate: token },
+})
+export const create = ({ token, verify, message }) => requests({
+  url: '/wx/post/create',
+  method: 'POST',
+  headers: { Authenticate: token },
+  data: { 
+    "fid": 93, 
+    "tid": "1126173", 
+    "message": message, 
+    "img_urls": [], 
+    "reply_to": 108826, 
+    "emojy": 0, 
+    "verify": verify,
+  },
+})
+export const postlike = ({ token, pid, tid }) => requests({
+  url: `/wx/post/like?id=${pid}&type=0&tid=${tid}`,
+  method: 'GET',
+  headers: { Authenticate: token },
+})
+export const postdislike = ({ token, pid, tid }) => requests({
+  url: `/wx/post/dislike?id=${pid}&type=0&tid=${tid}`,
+  method: 'GET',
+  headers: { Authenticate: token },
+})

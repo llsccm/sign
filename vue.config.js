@@ -2,13 +2,23 @@ module.exports = {
   lintOnSave: false,
   devServer: {
     proxy: {
-      '/api': {
+      '/api/old': {
         target: 'https://olforum.sanguosha.com/',
+        // target: 'https://preolforum.sanguosha.com/',
         changeOrigin: true,
         pathRewrite: {
-          '^/api': '/'
+          '^/api/old': '/',
         },
-        secure: true
+        secure: true,
+      },
+      '/api': {
+        // target: 'https://olforum.sanguosha.com/',
+        target: 'https://preolforum.sanguosha.com/',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api': '/',
+        },
+        secure: true,
       },
     },
   },
