@@ -10,16 +10,16 @@
       <el-col :span="16">
         <div class="table">
           <el-table :data="tableData" stripe size="medium">
-            <el-table-column prop="account" label="游卡账号" width="150"></el-table-column>
+            <el-table-column prop="account" label="游卡账号" width="200"></el-table-column>
             <!-- <el-table-column prop="password" label="密码" width="120"></el-table-column> -->
             <el-table-column prop="token" label="token" width="300"></el-table-column>
-            <el-table-column prop="tid" label="tid" width="100">
+            <el-table-column prop="tid" label="tid" width="110">
               <template slot-scope="scope">
                 <input type="text" v-model="scope.row.tid" v-show="scope.row.iseditor" />
                 <span v-show="!scope.row.iseditor">{{ scope.row.tid }}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="pid" label="pid" width="100">
+            <el-table-column prop="pid" label="要点赞的pid" width="120">
               <template slot-scope="scope">
                 <input type="text" v-model="scope.row.pid" v-show="scope.row.iseditor" />
                 <span v-show="!scope.row.iseditor">{{ scope.row.pid }}</span>
@@ -46,8 +46,8 @@
         <el-alert title="模拟三国杀ol社区微信小程序签到" type="warning" center show-icon description="token过期时间未知"> </el-alert>
         <el-alert title="使用了无服务器函数，访问接口会有一定的延迟" type="error" center> </el-alert>
         <div class="button">
-          <el-button :plain="true" type="info" @click="allInfo">获取信息</el-button>
-          <el-button :plain="true" type="info" @click="allSign">签到</el-button>
+          <el-button :plain="true" type="info" @click="allInfo">获取账号信息</el-button>
+          <el-button :plain="true" type="info" @click="allSign">一键签到</el-button>
           <!-- <el-button :plain="true" type="info" @click="reply">test</el-button> -->
         </div>
       </el-col>
@@ -65,13 +65,19 @@
             </el-form-item>
           </el-form>
         </div>
+        <div class="select">
+          <p>回帖内容选择</p>
+          <el-select v-model="listIndex" placeholder="请选择">
+            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"> </el-option>
+          </el-select>
+        </div>
       </el-col>
     </el-row>
   </div>
 </template>
 
 <script>
-import { login, getInfo, sign, getSignDay, like, dislike, postlike, postdislike, getVerify, create} from './api'
+import { login, getInfo, sign, getSignDay, like, dislike, postlike, postdislike, getVerify, create } from './api'
 import { throttle, debounce } from 'lodash'
 import md5 from 'js-md5'
 export default {
@@ -94,28 +100,46 @@ export default {
         password: ''
       },
       editorButton: '编辑',
-      content:[
-        '迷迷蒙蒙 你给的梦',
-        '出现裂缝 隐隐作痛',
-        '怎么沟通你都没空',
-        '说我不懂 说了没用',
-        '他的笑容 有何不同',
-        '在你心中 我不再受宠',
-        '我的天空 是雨是风',
-        '还是彩虹 你在操纵',
-        '恨自己真的没用',
-        '情绪激动'
+      options: [
+        {
+          value: 0,
+          label: '反方向的钟'
+        },
+        {
+          value: 1,
+          label: '最伟大的作品'
+        },
+        {
+          value: 2,
+          label: '够钟'
+        },
+        {
+          value: 3,
+          label: '梦缠绕的时候'
+        }
       ],
-      count: 0,
+      lrclist: [
+        ['穿梭时间的画面的钟', '从反方向 开始移动', '回到当初爱你的时空', '停格内容 不忠', '迷迷蒙蒙 你给的梦', '出现裂缝 隐隐作痛', '怎么沟通你都没空', '说我不懂 说了没用', '他的笑容 有何不同', '在你心中 我不再受宠'],
+        ['日出在印象的港口来回', '光线唤醒了睡着的花叶', '草地正为一场小雨欢悦', '我们彼此深爱这个世界', '停在康桥上的那只蝴蝶', '飞往午夜河畔的翡冷翠', '遗憾被偶然藏在了诗页', '是微笑都透不进的世界', '巴黎的鳞爪', '感伤的文法'],
+        ['像我这样 成就或太牵强', '而像你这样 每一位也心痒', '清楚 你未暗示我 是我幻想', '给我想太多 导致内伤', '&#x8FF7;&#x836F;快过 回复正常', '够钟死心了', '当你沉默得高调', '当得我历劫低潮', '为何尚要打扰', '过几多通宵 至肯醒觉才愿退烧'],
+        ['梦 缠绕的时候', '在我眼中', '昨日的痛楚如音符', '静静地飘过心中', '像烟雾弥漫', '想回味坚强的渴望', '你能否感到这迷惘', '让我痛楚让我欢畅', '让我的双眼蒙上', '尘封的幻想']
+      ],
+      listIndex: 0,
+      count: 0
     }
   },
   mounted() {
     // this.clock()
     this.tableData = JSON.parse(localStorage.getItem('user')) || []
   },
-  computed: {},
+  computed: {
+    content() {
+      return this.lrclist[this.listIndex]
+    }
+  },
   methods: {
-    async handleLogin(index, row) {//登录
+    async handleLogin(index, row) {
+      //登录
       let res = await login({
         account: row.account,
         password: row.password
@@ -231,8 +255,8 @@ export default {
       this.user.account = ''
       this.user.password = ''
     },
+    //一键签到所有账号
     async allSign() {
-      //一键签到所有账号
       const length = this.tableData.length
       for (let i = 0; i < length; i++) {
         if (this.tableData[i].token) {
@@ -258,34 +282,41 @@ export default {
         }
       })
     }, 5000),
-    wait(cb, params) {
+    wait(cb, params,time=2000) {
       return new Promise((resolve) => {
         setTimeout(() => {
           // console.log(new Date())
           resolve(cb(params))
-        }, 4000)
+        }, time)
       })
     },
     test: throttle(function () {
       console.log('节流')
     }, 5000),
+    //给别人回复点赞10次
     async handleLike(row) {
-      //给别人回复点赞10次
       let { token, pid, tid } = row
+      if (!pid || !tid) {
+        this.$message({
+          message: '未填写帖子tid或pid',
+          type: 'error'
+        })
+        return
+      }
       this.count = 0
       while (this.count < 10) {
         await this.wait(this.likeTask, { token, pid, tid })
       }
     },
+    //主题帖点赞5次
     async handleTopic(row) {
-      //主题帖点赞5次
       this.count = 0
       while (this.count < 5) {
         await this.wait(this.topicLike, row.token)
       }
     },
+    // 给别人回帖点赞
     async likeTask({ token, pid, tid }) {
-      // 给别人回帖点赞 
       let res = await postdislike({ token, pid, tid })
       if (res?.code == '0' || res?.code == '15006') {
         let res2 = await postlike({ token, pid, tid })
@@ -298,12 +329,12 @@ export default {
         }
       }
     },
+    //主题帖点赞 固定帖子
     async topicLike(token) {
-      //主题帖点赞 固定帖子
       let res = await dislike(token)
       if (res?.code == '15006' || res?.code == '0') {
         let res2 = await like(token)
-        console.log('like',res2)
+        console.log('like', res2)
         if (res2?.code == '0') {
           this.count++
           this.$message({
@@ -313,9 +344,9 @@ export default {
         }
       }
     },
-    async replyto({token, verify, message}){
-      //回复某帖
-      let res = await create({token, verify, message})
+    //回复某帖
+    async replyto({ token, verify, message }) {
+      let res = await create({ token, verify, message })
       if (res?.code == '0') {
         this.$message({
           message: res?.data.post.message,
@@ -324,22 +355,22 @@ export default {
         this.count++
       }
     },
+    //回复帖子 固定帖子10次
     async reply(token) {
-      //回复帖子 固定帖子10次
       let res = await getVerify(token) //获取safetoken
-      if(res?.code == '0'){
+      if (res?.code == '0') {
         let safe = res.data.verify_token
         while (this.count < 10) {
           let message = this.content[this.count]
           let verify = md5(message.length + safe)
-          await this.wait(this.replyto, {token, verify, message})
+          await this.wait(this.replyto, { token, verify, message }, 5000)
         }
       }
     },
-    handleReply(row) {
+    handleReply: throttle(function (row) {
       this.count = 0
       this.reply(row.token)
-    }
+    }, 5000)
   }
 }
 </script>
@@ -359,5 +390,12 @@ export default {
   padding: 20px;
   padding-top: 40px;
   width: 400px;
+}
+.select {
+  padding-left: 20px;
+}
+.select > p {
+  font-family: "Microsoft Yahei", Arial, Helvetica, sans-serif;
+  font-size: 14px;
 }
 </style>
