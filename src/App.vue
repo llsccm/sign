@@ -13,7 +13,7 @@
             <el-table-column prop="account" label="游卡账号" width="200"></el-table-column>
             <!-- <el-table-column prop="password" label="密码" width="120"></el-table-column> -->
             <el-table-column prop="token" label="token" width="300"></el-table-column>
-            <el-table-column prop="tid" label="tid" width="110">
+            <!-- <el-table-column prop="tid" label="tid" width="110">
               <template slot-scope="scope">
                 <input type="text" v-model="scope.row.tid" v-show="scope.row.iseditor" />
                 <span v-show="!scope.row.iseditor">{{ scope.row.tid }}</span>
@@ -24,7 +24,7 @@
                 <input type="text" v-model="scope.row.pid" v-show="scope.row.iseditor" />
                 <span v-show="!scope.row.iseditor">{{ scope.row.pid }}</span>
               </template>
-            </el-table-column>
+            </el-table-column> -->
             <!-- <el-table-column prop="otherTid" label="otherTopic" width="120">
               <template slot-scope="scope">
                 <input type="text" v-model="scope.row.otherTid" v-show="scope.row.iseditor" />
@@ -35,16 +35,18 @@
               <template slot-scope="scope">
                 <el-button size="mini" type="danger" @click="handleDelete(scope.$index)">删除</el-button>
                 <el-button size="mini" type="primary" @click="handleLogin(scope.$index, scope.row)">登录</el-button>
-                <el-button size="mini" type="warning" @click="handleEdit(scope.row, scope.$index)">{{ editorButton }}</el-button>
-                <el-button size="mini" type="info" @click="handleLike(scope.row)">回帖点赞</el-button>
+                <!-- <el-button size="mini" type="warning" @click="handleEdit(scope.row, scope.$index)">{{ editorButton }}</el-button> -->
+                <!-- <el-button size="mini" type="info" @click="handleLike(scope.row)">回帖点赞</el-button> -->
                 <el-button size="mini" type="info" @click="handleTopic(scope.row)">点赞主题</el-button>
                 <el-button size="mini" type="info" @click="handleReply(scope.row)">回帖</el-button>
+                <el-button size="mini" type="info" @click="handleBrowse(scope.row)">浏览帖子</el-button>
               </template>
             </el-table-column>
           </el-table>
         </div>
         <el-alert title="模拟三国杀ol社区微信小程序签到" type="warning" center show-icon description="token过期时间未知"> </el-alert>
         <el-alert title="使用了无服务器函数，访问接口会有一定的延迟" type="error" center> </el-alert>
+        <el-alert title="一次只支持一项任务，请勿同时运行多项任务" type="error" center> </el-alert>
         <div class="button">
           <el-button :plain="true" type="info" @click="allInfo">获取账号信息</el-button>
           <el-button :plain="true" type="info" @click="allSign">一键签到</el-button>
@@ -77,7 +79,7 @@
 </template>
 
 <script>
-import { login, getInfo, sign, getSignDay, like, dislike, postlike, postdislike, getVerify, create } from './api'
+import { login, getInfo, sign, getSignDay, like, dislike, postlike, postdislike, getVerify, create, browse} from './api'
 import { throttle, debounce } from 'lodash'
 import md5 from 'js-md5'
 export default {
@@ -89,8 +91,8 @@ export default {
           account: '',
           password: '',
           token: '',
-          tid: '',
-          pid: '',
+          // tid: '',
+          // pid: '',
           // otherTid: '',
           iseditor: false
         }
@@ -308,12 +310,16 @@ export default {
         await this.wait(this.likeTask, { token, pid, tid })
       }
     },
-    //主题帖点赞5次
+    //主题帖点赞10次
     async handleTopic(row) {
       this.count = 0
-      while (this.count < 5) {
+      while (this.count < 10) {
         await this.wait(this.topicLike, row.token)
       }
+      this.$message({
+        message: `完成点赞${this.count}次`,
+        type: 'success'
+      })
     },
     // 给别人回帖点赞
     async likeTask({ token, pid, tid }) {
@@ -365,12 +371,38 @@ export default {
           let verify = md5(message.length + safe)
           await this.wait(this.replyto, { token, verify, message }, 5000)
         }
+        this.$message({
+          message: `完成回复${this.count}次`,
+          type: 'success'
+        })        
       }
     },
     handleReply: throttle(function (row) {
       this.count = 0
       this.reply(row.token)
-    }, 5000)
+    }, 5000),
+    //浏览帖子
+    async browse(token) {
+      let res = await browse(token)
+      if (res?.code == '0') {
+        this.count++
+        this.$message({
+          message: `已浏览${this.count}次`,
+          type: 'success'
+        })
+      }
+    },
+    //浏览帖子 固定帖子10次
+    async handleBrowse(row){
+      this.count=0
+      while(this.count<10){
+        await this.wait(this.browse,row.token)
+      }
+      this.$message({
+        message: `完成浏览${this.count}次`,
+        type: 'success'
+      })
+    }
   }
 }
 </script>

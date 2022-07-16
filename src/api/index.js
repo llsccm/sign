@@ -88,3 +88,8 @@ export const postdislike = ({ token, pid, tid }) => requests({
   method: 'GET',
   headers: { Authenticate: token },
 })
+export const browse = (token) => requests({
+  url: '/wx/first/post?tid=1126173',
+  method: 'GET',
+  headers: { Authenticate: token },
+})
