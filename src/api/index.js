@@ -50,12 +50,12 @@ export const getSignDay = token => requests({
   method: 'GET',
 })
 export const like = token => requests({
-  url: `/wx/thread/like?tid=1126173`,
+  url: `/wx/thread/like?tid=1124997`,
   method: 'GET',
   headers: { Authenticate: token },
 })
 export const dislike = token => requests({
-  url: `/wx/thread/dislike?tid=1126173`,
+  url: `/wx/thread/dislike?tid=1124997`,
   method: 'GET',
   headers: { Authenticate: token },
 })
@@ -70,7 +70,7 @@ export const create = ({ token, verify, message }) => requests({
   headers: { Authenticate: token },
   data: { 
     "fid": 93, 
-    "tid": "1126173", 
+    "tid": "1124997", 
     "message": message, 
     "img_urls": [], 
     "reply_to": 108826, 
@@ -89,7 +89,7 @@ export const postdislike = ({ token, pid, tid }) => requests({
   headers: { Authenticate: token },
 })
 export const browse = (token) => requests({
-  url: '/wx/first/post?tid=1126173',
+  url: '/wx/first/post?tid=1124997',
   method: 'GET',
   headers: { Authenticate: token },
 })
