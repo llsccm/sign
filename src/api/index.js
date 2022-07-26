@@ -70,7 +70,7 @@ export const create = ({ token, verify, message }) => requests({
   headers: { Authenticate: token },
   data: { 
     "fid": 93, 
-    "tid": "1124997", 
+    "tid": "1108441", 
     "message": message, 
     "img_urls": [], 
     "reply_to": 108826, 

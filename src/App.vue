@@ -409,7 +409,7 @@ export default {
           message: res?.data.post.message,
           type: 'success'
         })
-        this.count++
+        // this.count++
       }
     },
     //回复帖子 固定帖子10次
@@ -417,17 +417,17 @@ export default {
       let res = await getVerify(token) //获取safetoken
       if (res?.code == '0') {
         let safe = res.data.verify_token
-        while (this.count < 10) {
-          let message = this.content[this.count]
+        // while (this.count < 10) {
+          let message = this.content[0]
           let verify = md5(message.length + safe)
           await this.wait(this.replyto, { token, verify, message }, 6000)
-        }
+        // }
         this.$notify({
-          message: `${this.count}次`,
+          message: `1次`,
           title: '完成回复',
           duration: 0
         })
-        this.count = 0
+        // this.count = 0
       }
     },
     handleReply: throttle(function (row) {
@@ -460,7 +460,7 @@ export default {
         })
         return
       }
-      while (this.count < 10) {
+      while (this.count < 20) {
         await this.wait(this.browse, row.token)
       }
       this.$message({
