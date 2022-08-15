@@ -70,7 +70,7 @@ export const create = ({ token, verify, message }) => requests({
   headers: { Authenticate: token },
   data: { 
     "fid": 93, 
-    "tid": "1108441", 
+    "tid": "1110588", 
     "message": message, 
     "img_urls": [], 
     "reply_to": 108826, 
@@ -88,8 +88,22 @@ export const postdislike = ({ token, pid, tid }) => requests({
   method: 'GET',
   headers: { Authenticate: token },
 })
-export const browse = (token) => requests({
+export const browse = token => requests({
   url: '/wx/first/post?tid=1124997',
+  method: 'GET',
+  headers: { Authenticate: token },
+})
+//旧版api
+export const oldlogin = ({ account, password }) => requests({
+  url: '/old/wx/forum/login',
+  method: 'POST',
+  data: {
+    account,
+    password,
+  },
+})
+export const oldsgin = token=> requests({
+  url: '/old/wx/forum/clock',
   method: 'GET',
   headers: { Authenticate: token },
 })

@@ -40,17 +40,18 @@
                 <el-button size="mini" type="info" @click="handleTopic(scope.row)">点赞主题</el-button>
                 <el-button size="mini" type="info" @click="handleReply(scope.row)">回帖</el-button>
                 <el-button size="mini" type="info" @click="handleBrowse(scope.row)">浏览帖子</el-button>
+                <el-button size="mini" type="info" @click="handleSign(scope.row,scope.$index)">旧版签到</el-button>
               </template>
             </el-table-column>
           </el-table>
         </div>
         <el-alert title="模拟三国杀ol社区微信小程序签到" type="warning" center show-icon description="token过期时间未知"> </el-alert>
         <el-alert title="使用了无服务器函数，访问接口会有一定的延迟" type="error" center> </el-alert>
-        <el-alert title="一次只支持一项任务，请勿同时运行多项任务" type="error" center> </el-alert>
+        <el-alert title="一次只支持一项批量任务，请勿同时运行多项任务" type="error" center> </el-alert>
         <div class="button">
           <el-button :plain="true" type="info" @click="allInfo">获取账号信息</el-button>
           <el-button :plain="true" type="info" @click="allSign">一键签到</el-button>
-          <!-- <el-button :plain="true" type="info" @click="reply">test</el-button> -->
+          <!-- <el-button :plain="true" type="info" @click="oldsgin">test</el-button> -->
         </div>
       </el-col>
       <el-col :span="8">
@@ -79,7 +80,7 @@
 </template>
 
 <script>
-import { login, getInfo, sign, getSignDay, like, dislike, postlike, postdislike, getVerify, create, browse } from './api'
+import { login, getInfo, sign, getSignDay, like, dislike, postlike, postdislike, getVerify, create, browse, oldlogin, oldsgin} from './api'
 import { throttle, debounce } from 'lodash'
 import md5 from 'js-md5'
 export default {
@@ -91,6 +92,7 @@ export default {
           account: '',
           password: '',
           token: '',
+          oldToken: '',
           // tid: '',
           // pid: '',
           // otherTid: '',
@@ -197,7 +199,7 @@ export default {
       } else {
         this.$notify({
           title: row.account,
-          message: res?.msg,
+          message: res?.msg || '网络异常',
           type: 'error'
         })
       }
@@ -336,9 +338,10 @@ export default {
         }, time)
       })
     },
-    test: throttle(function () {
-      console.log('节流')
-    }, 5000),
+    async test(){
+      let res = await oldsgin('8c2be10813bc1f823191dc63f4a1717c')
+      console.log(res)
+    },
     //给别人回复点赞10次
     async handleLike(row) {
       let { token, pid, tid } = row
@@ -468,6 +471,53 @@ export default {
         type: 'success'
       })
       this.count = 0
+    },
+    //旧版登录
+    async oldsgin() {
+      let res = await oldlogin({
+        account:'13640138515' ,
+        password: 'v970555760'
+      })
+      console.log(res)
+    },
+    //旧版API
+    async handleSign(row,index){
+      //旧版登录
+      if(!row.oldToken){
+        let res = await oldlogin({
+          account:row.account,
+          password:row.password
+        })
+        if(res?.code == '0'){
+          this.tableData[index].oldToken = res.data.token
+          localStorage.setItem('user', JSON.stringify(this.tableData))
+          this.$message({
+            message: res.msg,
+            type: 'success'
+          })
+        }else{
+          this.$message({
+            message: res?.msg || '登录失败',
+            type: 'error'
+          })
+          return
+        }
+      }
+      //旧版签到
+      let res = await oldsgin(row.oldToken)
+      if(res?.code == '0'){
+        this.$notify({
+          title: row.account,
+          message: res.msg,
+          type: 'success',
+          duration: 0
+        })
+      }else{
+        this.$message({
+          message: res?.msg || '登录失败',
+          type: 'info'
+        })
+      }
     }
   }
 }
