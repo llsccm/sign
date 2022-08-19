@@ -107,3 +107,8 @@ export const oldsgin = token=> requests({
   method: 'GET',
   headers: { Authenticate: token },
 })
+export const oldgetSignDay = token=> requests({
+  url: '/old/wx/forum/clock/days',
+  method: 'GET',
+  headers: { Authenticate: token },
+})

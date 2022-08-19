@@ -51,7 +51,7 @@
         <div class="button">
           <el-button :plain="true" type="info" @click="allInfo">获取账号信息</el-button>
           <el-button :plain="true" type="info" @click="allSign">一键签到</el-button>
-          <!-- <el-button :plain="true" type="info" @click="oldsgin">test</el-button> -->
+          <!-- <el-button :plain="true" type="info" @click="test">test</el-button> -->
         </div>
       </el-col>
       <el-col :span="8">
@@ -80,7 +80,7 @@
 </template>
 
 <script>
-import { login, getInfo, sign, getSignDay, like, dislike, postlike, postdislike, getVerify, create, browse, oldlogin, oldsgin} from './api'
+import { login, getInfo, sign, getSignDay, like, dislike, postlike, postdislike, getVerify, create, browse, oldlogin, oldsgin, oldgetSignDay} from './api'
 import { throttle, debounce } from 'lodash'
 import md5 from 'js-md5'
 export default {
@@ -339,7 +339,7 @@ export default {
       })
     },
     async test(){
-      let res = await oldsgin('8c2be10813bc1f823191dc63f4a1717c')
+      let res = await oldgetSignDay('8c2be10813bc1f823191dc63f4a1717c')
       console.log(res)
     },
     //给别人回复点赞10次
@@ -473,13 +473,6 @@ export default {
       this.count = 0
     },
     //旧版登录
-    async oldsgin() {
-      let res = await oldlogin({
-        account:'13640138515' ,
-        password: 'v970555760'
-      })
-      console.log(res)
-    },
     //旧版API
     async handleSign(row,index){
       //旧版登录
@@ -509,14 +502,32 @@ export default {
         this.$notify({
           title: row.account,
           message: res.msg,
-          type: 'success',
-          duration: 0
         })
+        let res2 = await oldgetSignDay(row.oldToken)
+        if(res2?.code == '0'){
+          this.$notify({
+            title: row.account,
+            message: `已签到${res2.data?.clockDays}天`,
+            type: 'success',
+            duration: 0
+          })
+        }
       }else{
         this.$message({
           message: res?.msg || '登录失败',
           type: 'info'
         })
+        if(res?.code == '1'){
+          let res2 = await oldgetSignDay(row.oldToken)
+          if(res2?.code == '0'){
+            this.$notify({
+              title: row.account,
+              message: `已签到${res2.data?.clockDays}天`,
+              type: 'success',
+              duration: 0
+            })
+          }
+        }
       }
     }
   }
