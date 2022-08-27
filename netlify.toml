@@ -13,6 +13,7 @@
   # located at the absolute path "root/project/build-output"
 
   publish = "./dist"
+  command = "npm run build"
 
 # A basic redirect rule
 [[redirects]]
