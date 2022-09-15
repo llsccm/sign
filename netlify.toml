@@ -20,6 +20,10 @@
   from = "/api/old/*"
   to = "https://olforum.sanguosha.com/:splat"
   status = 200
+[[redirects]]
+  from = "/api/official/*"
+  to = "https://wx.sanguosha.com/:splat"
+  status = 200
 
 [[redirects]]
   from = "/api/*"
@@ -31,5 +35,5 @@
   for = "/*"
 
   [headers.values]
-    cache-control = "max-age=7200"
+    cache-control = "max-age=600"
 

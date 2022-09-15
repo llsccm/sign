@@ -37,10 +37,11 @@
                 <el-button size="mini" type="primary" @click="handleLogin(scope.$index, scope.row)">登录</el-button>
                 <!-- <el-button size="mini" type="warning" @click="handleEdit(scope.row, scope.$index)">{{ editorButton }}</el-button> -->
                 <!-- <el-button size="mini" type="info" @click="handleLike(scope.row)">回帖点赞</el-button> -->
-                <el-button size="mini" type="info" @click="handleTopic(scope.row)">点赞主题</el-button>
-                <el-button size="mini" type="info" @click="handleReply(scope.row)">回帖</el-button>
-                <el-button size="mini" type="info" @click="handleBrowse(scope.row)">浏览帖子</el-button>
-                <el-button size="mini" type="info" @click="handleSign(scope.row,scope.$index)">旧版签到</el-button>
+                <el-button size="mini" type="info" @click="handleTopic(scope.row,$event)">点赞主题</el-button>
+                <el-button size="mini" type="info" @click="handleReply(scope.row,$event)">回帖</el-button>
+                <el-button size="mini" type="info" @click="handleBrowse(scope.row,$event)">浏览帖子</el-button>
+                <el-button size="mini" type="info" @click="handleSign(scope.row,scope.$index,$event)">旧版签到</el-button>
+                <!-- <el-button size="mini" type="info" @click="done">test</el-button> -->
               </template>
             </el-table-column>
           </el-table>
@@ -51,7 +52,7 @@
         <div class="button">
           <el-button :plain="true" type="info" @click="allInfo">获取账号信息</el-button>
           <el-button :plain="true" type="info" @click="allSign">一键签到</el-button>
-          <!-- <el-button :plain="true" type="info" @click="test">test</el-button> -->
+          <!-- <el-button :plain="true" type="info" @click="clockDo">公众号打卡</el-button> -->
         </div>
       </el-col>
       <el-col :span="8">
@@ -74,17 +75,20 @@
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"> </el-option>
           </el-select>
         </div>
+        <!-- <Clock></Clock> -->
       </el-col>
     </el-row>
   </div>
 </template>
 
 <script>
-import { login, getInfo, sign, getSignDay, like, dislike, postlike, postdislike, getVerify, create, browse, oldlogin, oldsgin, oldgetSignDay} from './api'
+import { login, getInfo, sign, getSignDay, like, dislike, postlike, postdislike, getVerify, create, browse, oldlogin, oldsgin, oldgetSignDay, wxclock} from './api'
 import { throttle, debounce } from 'lodash'
 import md5 from 'js-md5'
+import Clock from './components/clock.vue'
 export default {
   name: 'App',
+  components:{Clock},
   data() {
     return {
       tableData: [
@@ -338,9 +342,13 @@ export default {
         }, time)
       })
     },
-    async test(){
-      let res = await oldgetSignDay('8c2be10813bc1f823191dc63f4a1717c')
-      console.log(res)
+    done(e){
+      // console.log(e)
+      if (e.target.nodeName=='SPAN') {
+        e.target.parentNode.style.backgroundColor = '#67C23A'
+      }else{
+        e.target.style.backgroundColor = '#67C23A'
+      }
     },
     //给别人回复点赞10次
     async handleLike(row) {
@@ -358,7 +366,8 @@ export default {
       }
     },
     //主题帖点赞10次
-    async handleTopic(row) {
+    async handleTopic(row,e) {
+      this.done(e)
       if (this.count > 0) {
         this.$message({
           message: '请等待当前任务完成',
@@ -425,22 +434,23 @@ export default {
           let verify = md5(message.length + safe)
           await this.wait(this.replyto, { token, verify, message }, 6000)
         // }
-        this.$notify({
-          message: `1次`,
-          title: '完成回复',
-          duration: 0
-        })
+        // this.$notify({
+        //   message: `1次`,
+        //   title: '完成回复',
+        //   duration: 0
+        // })
         // this.count = 0
       }
     },
-    handleReply: throttle(function (row) {
-      if (this.count > 0) {
-        this.$message({
-          message: '请等待当前任务完成',
-          type: 'error'
-        })
-        return
-      }
+    handleReply: throttle(function (row,e) {
+      this.done(e)
+      // if (this.count > 0) {
+      //   this.$message({
+      //     message: '请等待当前任务完成',
+      //     type: 'error'
+      //   })
+      //   return
+      // }
       this.reply(row.token)
     }, 5000),
     //浏览帖子
@@ -455,7 +465,8 @@ export default {
       }
     },
     //浏览帖子 固定帖子10次
-    async handleBrowse(row) {
+    async handleBrowse(row,e) {
+      this.done(e)
       if (this.count > 0) {
         this.$message({
           message: '请等待当前任务完成',
@@ -474,8 +485,9 @@ export default {
     },
     //旧版登录
     //旧版API
-    async handleSign(row,index){
+    async handleSign(row,index,e){
       //旧版登录
+      this.done(e)
       if(!row.oldToken){
         let res = await oldlogin({
           account:row.account,
@@ -528,6 +540,20 @@ export default {
             })
           }
         }
+      }
+    },
+    async clockDo(){
+      let res = await wxclock()
+      if(res?.ret==0){
+        this.$message({
+          message: res?.data,
+          type: 'success'
+        })
+      }else{
+        this.$message({
+          message: '异常情况，请清空cookie重新设置',
+          type: 'error'
+        })
       }
     }
   }

@@ -5,6 +5,7 @@ import axios from 'axios'
 let requests = axios.create({
   baseURL: '/api',
   timeout: 12000,
+  withCredentials: true,
 })
 
 requests.interceptors.request.use((config) => {
@@ -25,7 +26,7 @@ requests.interceptors.response.use(
 )
 
 export const login = ({ account, password }) => requests({
-  url: '/old/v2/wx/forum/login',
+  url: '/wx/forum/login',
   method: 'POST',
   data: {
     account,
@@ -111,4 +112,9 @@ export const oldgetSignDay = token=> requests({
   url: '/old/wx/forum/clock/days',
   method: 'GET',
   headers: { Authenticate: token },
+})
+export const wxclock = () => requests({
+  url: '/official/api/clock/do',
+  method: 'POST',
+  // headers: {cookie}
 })

@@ -19,6 +19,8 @@ import {
   MessageBox,
   Select,
   Option,
+  Divider,
+  Tooltip
 } from 'element-ui'
 // import axios from 'axios'
 
@@ -38,6 +40,8 @@ Vue.use(MenuItem)
 Vue.use(Link)
 Vue.use(Select)
 Vue.use(Option)
+Vue.use(Divider)
+Vue.use(Tooltip)
 Vue.prototype.$message = Message
 Vue.prototype.$notify = Notification
 Vue.prototype.$confirm = MessageBox.confirm
