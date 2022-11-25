@@ -38,10 +38,10 @@
                 <!-- <el-button size="mini" type="warning" @click="handleEdit(scope.row, scope.$index)">{{ editorButton }}</el-button> -->
                 <!-- <el-button size="mini" type="info" @click="handleLike(scope.row)">回帖点赞</el-button> -->
                 <el-button size="mini" type="info" @click="handleTopic(scope.row,$event)">点赞主题</el-button>
-                <el-button size="mini" type="info" @click="handleReply(scope.row,$event)">回帖</el-button>
                 <el-button size="mini" type="info" @click="handleBrowse(scope.row,$event)">浏览帖子</el-button>
+                <el-button size="mini" type="info" @click="handleReply(scope.row,$event)">回帖</el-button>
                 <el-button size="mini" type="info" @click="handleSign(scope.row,scope.$index,$event)">旧版签到</el-button>
-                <!-- <el-button size="mini" type="info" @click="done">test</el-button> -->
+                <!-- <el-button size="mini" type="info" @click="test">test</el-button> -->
               </template>
             </el-table-column>
           </el-table>
@@ -52,6 +52,7 @@
         <div class="button">
           <el-button :plain="true" type="info" @click="allInfo">获取账号信息</el-button>
           <el-button :plain="true" type="info" @click="allSign">一键签到</el-button>
+          <!-- <el-button :plain="true" type="info" @click="test">test</el-button> -->
           <!-- <el-button :plain="true" type="info" @click="clockDo">公众号打卡</el-button> -->
         </div>
       </el-col>
@@ -82,7 +83,7 @@
 </template>
 
 <script>
-import { login, getInfo, sign, getSignDay, like, dislike, postlike, postdislike, getVerify, create, browse, oldlogin, oldsgin, oldgetSignDay, wxclock} from './api'
+import { login, getInfo, sign, getSignDay, like, dislike, postlike, postdislike, getVerify, create, browse, oldlogin, oldsgin, oldgetSignDay, wxclock,getthreadlist} from './api'
 import { throttle, debounce } from 'lodash'
 import md5 from 'js-md5'
 import Clock from './components/clock.vue'
@@ -173,7 +174,8 @@ export default {
         ['风 狠狠的刮', '谁 在害怕', '海风一直眷恋着沙', '你却错过我的年华', '错过我新长的枝丫', '和我的白发', '蝴蝶依旧狂恋着花', '你却错过我的年华', '错过我转世的脸颊', '你还爱我吗']
       ],
       listIndex: 0,
-      count: 0
+      count: 0,
+      threadTid:1124997,
     }
   },
   mounted() {
@@ -365,7 +367,7 @@ export default {
         await this.wait(this.likeTask, { token, pid, tid })
       }
     },
-    //主题帖点赞10次
+    //主题帖点赞 最新帖子 10次
     async handleTopic(row,e) {
       this.done(e)
       if (this.count > 0) {
@@ -375,8 +377,18 @@ export default {
         })
         return
       }
-      while (this.count < 10) {
-        await this.wait(this.topicLike, row.token)
+      let res = await getthreadlist()
+      if(res.code == '0'){
+        this.threadTid = res.data?.list.length > 0 ? res.data?.list[0].tid : 1124997
+        while (this.count < 10) {
+          await this.wait(this.topicLike, row.token)
+        }
+      }else{
+        this.$message({
+          message: '获取帖子列表失败',
+          type: 'error'
+        })
+        return
       }
       this.$message({
         message: `完成点赞${this.count}次`,
@@ -398,20 +410,23 @@ export default {
         }
       }
     },
-    //主题帖点赞 固定帖子
+    //主题帖点赞 最新帖子
     async topicLike(token) {
-      let res = await dislike(token)
-      if (res?.code == '15006' || res?.code == '0') {
-        let res2 = await like(token)
-        console.log('like', res2)
-        if (res2?.code == '0') {
+      // let res = await dislike(token)
+      // if (res?.code == '15006' || res?.code == '0') {
+        let tid = this.threadTid
+        let res = await like({token,tid})
+        console.log('like', res)
+        if (res.code == '0') {
           this.count++
+          this.threadTid--
           this.$message({
-            message: `已点赞${this.count}次`,
+            message: `帖子${tid}已点赞,已完成${this.count}次`,
             type: 'success'
           })
+        }else if (res.code == '15005'){
+          this.threadTid--
         }
-      }
     },
     //回复某帖
     async replyto({ token, verify, message }) {
@@ -455,16 +470,18 @@ export default {
     }, 5000),
     //浏览帖子
     async browse(token) {
-      let res = await browse(token)
-      if (res?.code == '0') {
-        this.count++
-        this.$message({
-          message: `已浏览${this.count}次`,
-          type: 'success'
-        })
-      }
+        let tid = this.threadTid
+        let res = await browse({token,tid})
+        if (res?.code == '0') {
+          this.count++
+          this.threadTid--
+          this.$message({
+            message: `已浏览帖子${tid},任务计数${this.count}次`,
+            type: 'success'
+          })
+        }
     },
-    //浏览帖子 固定帖子10次
+    //浏览帖子 最新帖子 20+5次
     async handleBrowse(row,e) {
       this.done(e)
       if (this.count > 0) {
@@ -474,8 +491,18 @@ export default {
         })
         return
       }
-      while (this.count < 20) {
-        await this.wait(this.browse, row.token)
+      let res = await getthreadlist()
+      if(res.code == '0'){
+        this.threadTid = res.data?.list.length > 0 ? res.data?.list[0].tid : 1124997
+        while (this.count < 25) {
+          await this.wait(this.browse, row.token)
+        }
+      }else{
+        this.$message({
+          message: '获取帖子列表失败',
+          type: 'error'
+        })
+        return
       }
       this.$message({
         message: `完成浏览${this.count}次`,
@@ -554,6 +581,12 @@ export default {
           message: '异常情况，请清空cookie重新设置',
           type: 'error'
         })
+      }
+    },
+    async test(){
+      let res = await getthreadlist()
+      if(res.code == '0'){
+        this.threadTid = res.data?.list.length > 0 ? res.data?.list[0].tid : 1124997
       }
     }
   }

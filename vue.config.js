@@ -1,5 +1,6 @@
 module.exports = {
   lintOnSave: false,
+
   devServer: {
     proxy: {
       '/api/old': {
@@ -30,4 +31,6 @@ module.exports = {
       },
     },
   },
+
+  productionSourceMap: false
 }

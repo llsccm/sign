@@ -50,8 +50,8 @@ export const getSignDay = token => requests({
   headers: { Authenticate: token },
   method: 'GET',
 })
-export const like = token => requests({
-  url: `/wx/thread/like?tid=1124997`,
+export const like = ({token,tid}) => requests({
+  url: `/wx/thread/like?tid=${tid}`,
   method: 'GET',
   headers: { Authenticate: token },
 })
@@ -89,8 +89,8 @@ export const postdislike = ({ token, pid, tid }) => requests({
   method: 'GET',
   headers: { Authenticate: token },
 })
-export const browse = token => requests({
-  url: '/wx/first/post?tid=1124997',
+export const browse = ({token,tid}) => requests({
+  url: `/wx/first/post?tid=${tid}`,
   method: 'GET',
   headers: { Authenticate: token },
 })
@@ -117,4 +117,8 @@ export const wxclock = () => requests({
   url: '/official/api/clock/do',
   method: 'POST',
   // headers: {cookie}
+})
+export const getthreadlist = () => requests({
+  url:'/v2/thread/recommend?fid=87&page=1&sort=2',
+  method:'GET'
 })
