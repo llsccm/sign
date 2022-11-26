@@ -472,13 +472,15 @@ export default {
     async browse(token) {
         let tid = this.threadTid
         let res = await browse({token,tid})
-        if (res?.code == '0') {
+        if (res.code == '0') {
           this.count++
           this.threadTid--
           this.$message({
             message: `已浏览帖子${tid},任务计数${this.count}次`,
             type: 'success'
           })
+        }else if(res.code == '15002'){
+          this.threadTid--
         }
     },
     //浏览帖子 最新帖子 20+5次
