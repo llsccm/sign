@@ -367,7 +367,7 @@ export default {
         await this.wait(this.likeTask, { token, pid, tid })
       }
     },
-    //主题帖点赞 最新帖子 10次
+    //主题帖点赞 最新帖子 5次
     async handleTopic(row,e) {
       this.done(e)
       if (this.count > 0) {
@@ -380,7 +380,7 @@ export default {
       let res = await getthreadlist()
       if(res.code == '0'){
         this.threadTid = res.data?.list.length > 0 ? res.data?.list[0].tid : 1124997
-        while (this.count < 10) {
+        while (this.count < 5) {
           await this.wait(this.topicLike, row.token)
         }
       }else{
@@ -447,7 +447,7 @@ export default {
         // while (this.count < 10) {
           let message = this.content[0]
           let verify = md5(message.length + safe)
-          await this.wait(this.replyto, { token, verify, message }, 6000)
+          await this.wait(this.replyto, { token, verify, message }, 4000)
         // }
         // this.$notify({
         //   message: `1次`,
@@ -483,7 +483,7 @@ export default {
           this.threadTid--
         }
     },
-    //浏览帖子 最新帖子 20+5次
+    //浏览帖子 最新帖子 5+5次
     async handleBrowse(row,e) {
       this.done(e)
       if (this.count > 0) {
@@ -496,7 +496,7 @@ export default {
       let res = await getthreadlist()
       if(res.code == '0'){
         this.threadTid = res.data?.list.length > 0 ? res.data?.list[0].tid : 1124997
-        while (this.count < 25) {
+        while (this.count < 10) {
           await this.wait(this.browse, row.token)
         }
       }else{
