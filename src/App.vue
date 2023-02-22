@@ -194,7 +194,7 @@ export default {
         account: row.account,
         password: row.password
       })
-      if (res?.code == '0') {
+      if (res.code == '0') {
         this.tableData[index].token = res.data.token
         this.tableData[index].iseditor = false
         this.$message({
@@ -224,7 +224,7 @@ export default {
     //用户信息
     async info({ token, account }) {
       let res = await getInfo(token)
-      if (res?.code == '0') {
+      if (res.code == '0') {
         console.log(res.data)
         this.$notify({
           title: account,
@@ -236,13 +236,13 @@ export default {
     //签到
     async clock({ account, token }) {
       let res = await sign(token)
-      if (res?.code == '0') {
+      if (res.code == '0') {
         this.$message({
           message: `${res.data.name}, ${res.data.num}`,
           type: 'success'
         })
         this.signDay({ account, token })
-      } else if (res?.code == '1') {
+      } else if (res.code == '1') {
         this.$notify({
           title: account,
           message: res.msg,
@@ -251,7 +251,7 @@ export default {
         this.signDay({ account, token })
       } else {
         this.$message({
-          message: res?.msg || '连接异常',
+          message: res.msg || '连接异常',
           type: 'error'
         })
       }
@@ -261,7 +261,7 @@ export default {
       let res = await getSignDay(token)
       this.$notify({
         title: `${account}`,
-        message: `已签到:${res?.data.clockDays}天`,
+        message: `已签到:${res.data?.clockDays}天`,
         duration: 0
       })
     },
@@ -369,7 +369,6 @@ export default {
     },
     //主题帖点赞 最新帖子 5次
     async handleTopic(row,e) {
-      this.done(e)
       if (this.count > 0) {
         this.$message({
           message: '请等待当前任务完成',
@@ -377,6 +376,7 @@ export default {
         })
         return
       }
+      this.done(e)
       let res = await getthreadlist()
       if(res.code == '0'){
         this.threadTid = res.data?.list.length > 0 ? res.data?.list[0].tid : 1124997
@@ -431,7 +431,7 @@ export default {
     //回复某帖
     async replyto({ token, verify, message }) {
       let res = await create({ token, verify, message })
-      if (res?.code == '0') {
+      if (res.code == '0') {
         this.$message({
           message: res?.data.post.message,
           type: 'success'
@@ -442,7 +442,7 @@ export default {
     //回复帖子 固定帖子10次
     async reply(token) {
       let res = await getVerify(token) //获取safetoken
-      if (res?.code == '0') {
+      if (res.code == '0') {
         let safe = res.data.verify_token
         // while (this.count < 10) {
           let message = this.content[0]
@@ -485,7 +485,6 @@ export default {
     },
     //浏览帖子 最新帖子 5+5次
     async handleBrowse(row,e) {
-      this.done(e)
       if (this.count > 0) {
         this.$message({
           message: '请等待当前任务完成',
@@ -493,6 +492,7 @@ export default {
         })
         return
       }
+      this.done(e)
       let res = await getthreadlist()
       if(res.code == '0'){
         this.threadTid = res.data?.list.length > 0 ? res.data?.list[0].tid : 1124997
@@ -522,7 +522,7 @@ export default {
           account:row.account,
           password:row.password
         })
-        if(res?.code == '0'){
+        if(res.code == '0'){
           this.tableData[index].oldToken = res.data.token
           localStorage.setItem('user', JSON.stringify(this.tableData))
           this.$message({

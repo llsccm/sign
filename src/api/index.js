@@ -22,6 +22,7 @@ requests.interceptors.response.use(
   },
   (err) => {
     console.log('err', err)
+    return err
   }
 )
 
