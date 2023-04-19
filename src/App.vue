@@ -39,8 +39,8 @@
                 <!-- <el-button size="mini" type="info" @click="handleLike(scope.row)">回帖点赞</el-button> -->
                 <el-button size="mini" type="info" @click="handleTopic(scope.row,$event)">点赞主题</el-button>
                 <el-button size="mini" type="info" @click="handleBrowse(scope.row,$event)">浏览帖子</el-button>
-                <el-button size="mini" type="info" @click="handleReply(scope.row,$event)">回帖</el-button>
-                <el-button size="mini" type="info" @click="handleSign(scope.row,scope.$index,$event)">旧版签到</el-button>
+                <!-- <el-button size="mini" type="info" @click="handleReply(scope.row,$event)">回帖</el-button> -->
+                <!-- <el-button size="mini" type="info" @click="handleSign(scope.row,scope.$index,$event)">旧版签到</el-button> -->
                 <!-- <el-button size="mini" type="info" @click="test">test</el-button> -->
               </template>
             </el-table-column>
@@ -79,6 +79,7 @@
         <!-- <Clock></Clock> -->
       </el-col>
     </el-row>
+    <Vote></Vote>
   </div>
 </template>
 
@@ -87,9 +88,10 @@ import { login, getInfo, sign, getSignDay, like, dislike, postlike, postdislike,
 import { throttle, debounce } from 'lodash'
 import md5 from 'js-md5'
 import Clock from './components/clock.vue'
+import Vote from './components/Vote.vue'
 export default {
   name: 'App',
-  components:{Clock},
+  components:{Clock,Vote},
   data() {
     return {
       tableData: [
@@ -598,6 +600,7 @@ export default {
 <style>
 .table {
   margin-left: 50px;
+  min-width: 850px;
 }
 .table input {
   width: 80px;

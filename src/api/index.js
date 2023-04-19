@@ -35,66 +35,75 @@ export const login = ({ account, password }) => requests({
   },
 })
 
-
 export const getInfo = token => requests({
   url: '/wx/account/info',
   method: 'GET',
   headers: { Authenticate: token },
 })
+
 export const sign = token => requests({
   url: '/wx/forum/clock?type=1',
   method: 'GET',
   headers: { Authenticate: token },
 })
+
 export const getSignDay = token => requests({
   url: '/wx/forum/clock/days?type=1',
   headers: { Authenticate: token },
   method: 'GET',
 })
-export const like = ({token,tid}) => requests({
+
+export const like = ({ token, tid }) => requests({
   url: `/wx/thread/like?tid=${tid}`,
   method: 'GET',
   headers: { Authenticate: token },
 })
+
 export const dislike = token => requests({
   url: `/wx/thread/dislike?tid=1124997`,
   method: 'GET',
   headers: { Authenticate: token },
 })
+
 export const getVerify = token => requests({
   url: '/wx/thread/token',
   method: 'POST',
   headers: { Authenticate: token },
 })
+
 export const create = ({ token, verify, message }) => requests({
   url: '/wx/post/create',
   method: 'POST',
   headers: { Authenticate: token },
-  data: { 
-    "fid": 93, 
-    "tid": "1110588", 
-    "message": message, 
-    "img_urls": [], 
-    "reply_to": 108826, 
-    "emojy": 0, 
+  data: {
+    "fid": 93,
+    "tid": "1110588",
+    "message": message,
+    "img_urls": [],
+    "reply_to": 108826,
+    "emojy": 0,
     "verify": verify,
   },
 })
+
 export const postlike = ({ token, pid, tid }) => requests({
   url: `/wx/post/like?id=${pid}&type=0&tid=${tid}`,
   method: 'GET',
   headers: { Authenticate: token },
 })
+
 export const postdislike = ({ token, pid, tid }) => requests({
   url: `/wx/post/dislike?id=${pid}&type=0&tid=${tid}`,
   method: 'GET',
   headers: { Authenticate: token },
 })
-export const browse = ({token,tid}) => requests({
+//浏览帖子
+export const browse = ({ token, tid }) => requests({
   url: `/wx/first/post?tid=${tid}`,
   method: 'GET',
   headers: { Authenticate: token },
 })
+
 //旧版api
 export const oldlogin = ({ account, password }) => requests({
   url: '/old/wx/forum/login',
@@ -104,22 +113,37 @@ export const oldlogin = ({ account, password }) => requests({
     password,
   },
 })
-export const oldsgin = token=> requests({
+
+export const oldsgin = token => requests({
   url: '/old/wx/forum/clock',
   method: 'GET',
   headers: { Authenticate: token },
 })
-export const oldgetSignDay = token=> requests({
+
+export const oldgetSignDay = token => requests({
   url: '/old/wx/forum/clock/days',
   method: 'GET',
   headers: { Authenticate: token },
 })
+
 export const wxclock = () => requests({
   url: '/official/api/clock/do',
   method: 'POST',
   // headers: {cookie}
 })
+
 export const getthreadlist = () => requests({
-  url:'/v2/thread/recommend?fid=87&page=1&sort=2',
-  method:'GET'
+  url: '/v2/thread/recommend?fid=87&page=1&sort=2',
+  method: 'GET'
+})
+
+//投票
+export const pollVote = token => requests({
+  url: '/wx/poll/vote',
+  method: 'POST',
+  headers: { Authenticate: token },
+  data:{
+    "tid": "1219361",
+    "option_ids": [19482, 19483]
+  }
 })
