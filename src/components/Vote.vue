@@ -1,6 +1,6 @@
 <template>
   <div class="form">
-    <p>投票v1.0</p>
+    <p>投票v1.1</p>
     <el-divider></el-divider>
     <el-form :model="user" status-icon label-width="80px" label-position="left" size="mini">
       <el-form-item label="账号" prop="account">
@@ -10,7 +10,7 @@
       <el-form-item label="密码" prop="password">
         <el-input type="password" v-model="user.password" autocomplete="off" show-password></el-input>
       </el-form-item>
-      <el-form-item label="个数" prop="count">
+      <el-form-item label="额外个数" prop="count">
         <el-input v-model="user.count" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item>
@@ -32,7 +32,7 @@ export default {
         num:'001',
         password: '',
         account:'0',
-        count:1
+        count:0
       },
     }
   },
@@ -48,9 +48,12 @@ export default {
     async start(next){
       // console.log('整合账号')
       let {name,num,password} = this.user
-      num = Number(num) + Number(next)
+      if(num){
+        num = Number(num) + Number(next)
+        num = num.toString().padStart(3,0)
+      }
       //补零
-      let account = name + num.toString().padStart(3,0)
+      let account = name + num
       this.user.account = account
       //登录
       let res = await login({account,password})
