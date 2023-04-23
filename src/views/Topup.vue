@@ -73,7 +73,7 @@ export default {
   methods: {
     async getInfo() {
       const account = this.user.account
-      const olUrl = `http://web.sanguosha.com/login/ol/nickname.html?account=${account}`
+      const olUrl = `https://web.sanguosha.com/login/ol/nickname.html?account=${account}`
       const res = await fetch(olUrl)
       const data = await res.json()
       if (data.code === 0) {
