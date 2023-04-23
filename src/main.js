@@ -21,7 +21,11 @@ import {
   Select,
   Option,
   Divider,
-  Tooltip
+  Tooltip,
+  Descriptions,
+  DescriptionsItem,
+  Dialog,
+  Image
 } from 'element-ui'
 
 import router from './router'
@@ -45,8 +49,13 @@ Vue.use(Select)
 Vue.use(Option)
 Vue.use(Divider)
 Vue.use(Tooltip)
+Vue.use(Descriptions)
+Vue.use(DescriptionsItem)
+Vue.use(Dialog)
+Vue.use(Image)
 Vue.prototype.$message = Message
 Vue.prototype.$notify = Notification
+Vue.prototype.$alert = MessageBox.alert
 Vue.prototype.$confirm = MessageBox.confirm
 
 

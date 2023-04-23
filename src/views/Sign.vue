@@ -1,12 +1,12 @@
 <template>
-      <el-row type="flex" justify="space-around">
-      <el-col :span="14">
-        <div class="table">
-          <el-table :data="tableData" stripe size="medium" ref="table" fit>
-            <el-table-column prop="account" label="游卡账号" width="200"></el-table-column>
-            <!-- <el-table-column prop="password" label="密码" width="120"></el-table-column> -->
-            <el-table-column prop="token" label="token" width="300"></el-table-column>
-            <!-- <el-table-column prop="tid" label="tid" width="110">
+  <el-row type="flex" justify="space-around">
+    <el-col :span="14">
+      <div class="table">
+        <el-table :data="tableData" stripe size="medium" ref="table" fit>
+          <el-table-column prop="account" label="游卡账号" width="200"></el-table-column>
+          <!-- <el-table-column prop="password" label="密码" width="120"></el-table-column> -->
+          <el-table-column prop="token" label="token" width="300"></el-table-column>
+          <!-- <el-table-column prop="tid" label="tid" width="110">
               <template slot-scope="scope">
                 <input type="text" v-model="scope.row.tid" v-show="scope.row.iseditor" />
                 <span v-show="!scope.row.iseditor">{{ scope.row.tid }}</span>
@@ -18,67 +18,67 @@
                 <span v-show="!scope.row.iseditor">{{ scope.row.pid }}</span>
               </template>
             </el-table-column> -->
-            <!-- <el-table-column prop="otherTid" label="otherTopic" width="120">
+          <!-- <el-table-column prop="otherTid" label="otherTopic" width="120">
               <template slot-scope="scope">
                 <input type="text" v-model="scope.row.otherTid" v-show="scope.row.iseditor" />
                 <span v-show="!scope.row.iseditor">{{ scope.row.otherTid }}</span>
               </template>
             </el-table-column> -->
-            <el-table-column label="操作" min-width="400">
-              <template slot-scope="scope">
-                <el-button size="mini" type="danger" @click="handleDelete(scope.$index)">删除</el-button>
-                <el-button size="mini" type="primary" @click="handleLogin(scope.$index, scope.row)">登录</el-button>
-                <!-- <el-button size="mini" type="warning" @click="handleEdit(scope.row, scope.$index)">{{ editorButton }}</el-button> -->
-                <!-- <el-button size="mini" type="info" @click="handleLike(scope.row)">回帖点赞</el-button> -->
-                <el-button size="mini" type="info" @click="handleTopic(scope.row,$event)">点赞主题</el-button>
-                <el-button size="mini" type="info" @click="handleBrowse(scope.row,$event)">浏览帖子</el-button>
-                <!-- <el-button size="mini" type="info" @click="handleReply(scope.row,$event)">回帖</el-button> -->
-                <!-- <el-button size="mini" type="info" @click="handleSign(scope.row,scope.$index,$event)">旧版签到</el-button> -->
-                <!-- <el-button size="mini" type="info" @click="test">test</el-button> -->
-              </template>
-            </el-table-column>
-          </el-table>
-        </div>
-        <el-alert title="模拟三国杀ol社区微信小程序签到" type="warning" center show-icon description="token过期时间未知"> </el-alert>
-        <el-alert title="使用了无服务器函数，访问接口会有一定的延迟" type="error" center> </el-alert>
-        <el-alert title="一次只支持一项批量任务，请勿同时运行多项任务" type="error" center> </el-alert>
-        <div class="button">
-          <el-button :plain="true" type="info" @click="allInfo">获取账号信息</el-button>
-          <el-button :plain="true" type="info" @click="allSign">一键签到</el-button>
-          <!-- <el-button :plain="true" type="info" @click="test">test</el-button> -->
-          <!-- <el-button :plain="true" type="info" @click="clockDo">公众号打卡</el-button> -->
-        </div>
-      </el-col>
-      <el-col :span="8">
-        <div class="form">
-          <el-form :model="user" status-icon label-width="80px" label-position="left" size="mini">
-            <el-form-item label="账号" prop="account">
-              <el-input v-model.trim="user.account"></el-input>
-            </el-form-item>
-            <el-form-item label="密码" prop="password">
-              <el-input type="password" v-model="user.password" autocomplete="off" show-password></el-input>
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="add">添加</el-button>
-            </el-form-item>
-          </el-form>
-        </div>
-        <!-- <div class="select">
+          <el-table-column label="操作" min-width="400">
+            <template slot-scope="scope">
+              <el-button size="mini" type="danger" @click="handleDelete(scope.$index)">删除</el-button>
+              <el-button size="mini" type="primary" @click="handleLogin(scope.$index, scope.row)">登录</el-button>
+              <!-- <el-button size="mini" type="warning" @click="handleEdit(scope.row, scope.$index)">{{ editorButton }}</el-button> -->
+              <!-- <el-button size="mini" type="info" @click="handleLike(scope.row)">回帖点赞</el-button> -->
+              <el-button size="mini" type="info" @click="handleTopic(scope.row, $event)">点赞主题</el-button>
+              <el-button size="mini" type="info" @click="handleBrowse(scope.row, $event)">浏览帖子</el-button>
+              <!-- <el-button size="mini" type="info" @click="handleReply(scope.row,$event)">回帖</el-button> -->
+              <!-- <el-button size="mini" type="info" @click="handleSign(scope.row,scope.$index,$event)">旧版签到</el-button> -->
+              <!-- <el-button size="mini" type="info" @click="test">test</el-button> -->
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+      <el-alert title="模拟三国杀ol社区微信小程序签到" type="warning" center show-icon description="token过期时间未知"> </el-alert>
+      <el-alert title="使用了无服务器函数，访问接口会有一定的延迟" type="error" center> </el-alert>
+      <el-alert title="一次只支持一项批量任务，请勿同时运行多项任务" type="error" center> </el-alert>
+      <div class="button">
+        <el-button :plain="true" type="info" @click="allInfo">获取账号信息</el-button>
+        <el-button :plain="true" type="info" @click="allSign">一键签到</el-button>
+        <!-- <el-button :plain="true" type="info" @click="test">test</el-button> -->
+        <!-- <el-button :plain="true" type="info" @click="clockDo">公众号打卡</el-button> -->
+      </div>
+    </el-col>
+    <el-col :span="8">
+      <div class="form">
+        <el-form :model="user" status-icon label-width="80px" label-position="left" size="mini">
+          <el-form-item label="账号" prop="account">
+            <el-input v-model.trim="user.account"></el-input>
+          </el-form-item>
+          <el-form-item label="密码" prop="password">
+            <el-input type="password" v-model="user.password" autocomplete="off" show-password></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="add">添加</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+      <!-- <div class="select">
           <p>回帖内容选择</p>
           <el-select v-model="listIndex" placeholder="请选择">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"> </el-option>
           </el-select>
         </div> -->
-      </el-col>
-    </el-row>
+    </el-col>
+  </el-row>
 </template>
 
 <script>
-import { login, getInfo, sign, getSignDay, like, dislike, postlike, postdislike, getVerify, create, browse, oldlogin, oldsgin, oldgetSignDay, wxclock,getthreadlist} from '../api'
+import { login, getInfo, sign, getSignDay, like, postlike, postdislike, getVerify, create, browse, oldlogin, oldsgin, oldgetSignDay, wxclock, getthreadlist } from '../api'
 import { throttle } from 'lodash'
 import md5 from 'js-md5'
 export default {
-  name:'Sign',
+  name: 'Sign',
   data() {
     return {
       tableData: [
@@ -146,7 +146,7 @@ export default {
         {
           value: 11,
           label: '千年之恋'
-        },
+        }
       ],
       lrclist: [
         ['穿梭时间的画面的钟', '从反方向 开始移动', '回到当初爱你的时空', '停格内容 不忠', '迷迷蒙蒙 你给的梦', '出现裂缝 隐隐作痛', '怎么沟通你都没空', '说我不懂 说了没用', '他的笑容 有何不同', '在你心中 我不再受宠'],
@@ -164,16 +164,17 @@ export default {
       ],
       listIndex: 0,
       count: 0,
-      threadTid:1124997,
+      threadTid: 1124997
     }
   },
   mounted() {
     // this.clock()
     this.tableData = JSON.parse(localStorage.getItem('user')) || []
   },
-  beforeUpdate(){
-    this.$nextTick(() => { //在数据加载完，重新渲染表格
-    this.$refs['table'].doLayout();
+  beforeUpdate() {
+    this.$nextTick(() => {
+      //在数据加载完，重新渲染表格
+      this.$refs['table'].doLayout()
     })
   },
   computed: {
@@ -338,11 +339,11 @@ export default {
         }, time)
       })
     },
-    done(e){
+    done(e) {
       // console.log(e)
-      if (e.target.nodeName=='SPAN') {
+      if (e.target.nodeName == 'SPAN') {
         e.target.parentNode.style.backgroundColor = '#67C23A'
-      }else{
+      } else {
         e.target.style.backgroundColor = '#67C23A'
       }
     },
@@ -362,7 +363,7 @@ export default {
       }
     },
     //主题帖点赞 最新帖子 5次
-    async handleTopic(row,e) {
+    async handleTopic(row, e) {
       if (this.count > 0) {
         this.$message({
           message: '请等待当前任务完成',
@@ -372,12 +373,12 @@ export default {
       }
       this.done(e)
       let res = await getthreadlist()
-      if(res.code == '0'){
+      if (res.code == '0') {
         this.threadTid = res.data?.list.length > 0 ? res.data?.list[0].tid : 1124997
         while (this.count < 5) {
           await this.wait(this.topicLike, row.token)
         }
-      }else{
+      } else {
         this.$message({
           message: '获取帖子列表失败',
           type: 'error'
@@ -408,19 +409,19 @@ export default {
     async topicLike(token) {
       // let res = await dislike(token)
       // if (res?.code == '15006' || res?.code == '0') {
-        let tid = this.threadTid
-        let res = await like({token,tid})
-        console.log('like', res)
-        if (res.code == '0') {
-          this.count++
-          this.threadTid--
-          this.$message({
-            message: `帖子${tid}已点赞,已完成${this.count}次`,
-            type: 'success'
-          })
-        }else if (res.code == '15005'){
-          this.threadTid--
-        }
+      let tid = this.threadTid
+      let res = await like({ token, tid })
+      console.log('like', res)
+      if (res.code == '0') {
+        this.count++
+        this.threadTid--
+        this.$message({
+          message: `帖子${tid}已点赞,已完成${this.count}次`,
+          type: 'success'
+        })
+      } else if (res.code == '15005') {
+        this.threadTid--
+      }
     },
     //回复某帖
     async replyto({ token, verify, message }) {
@@ -439,9 +440,9 @@ export default {
       if (res.code == '0') {
         let safe = res.data.verify_token
         // while (this.count < 10) {
-          let message = this.content[0]
-          let verify = md5(message.length + safe)
-          await this.wait(this.replyto, { token, verify, message }, 4000)
+        let message = this.content[0]
+        let verify = md5(message.length + safe)
+        await this.wait(this.replyto, { token, verify, message }, 4000)
         // }
         // this.$notify({
         //   message: `1次`,
@@ -451,7 +452,7 @@ export default {
         // this.count = 0
       }
     },
-    handleReply: throttle(function (row,e) {
+    handleReply: throttle(function (row, e) {
       this.done(e)
       // if (this.count > 0) {
       //   this.$message({
@@ -464,21 +465,21 @@ export default {
     }, 5000),
     //浏览帖子
     async browse(token) {
-        let tid = this.threadTid
-        let res = await browse({token,tid})
-        if (res.code == '0') {
-          this.count++
-          this.threadTid--
-          this.$message({
-            message: `已浏览帖子${tid},任务计数${this.count}次`,
-            type: 'success'
-          })
-        }else if(res.code == '15002'){
-          this.threadTid--
-        }
+      let tid = this.threadTid
+      let res = await browse({ token, tid })
+      if (res.code == '0') {
+        this.count++
+        this.threadTid--
+        this.$message({
+          message: `已浏览帖子${tid},任务计数${this.count}次`,
+          type: 'success'
+        })
+      } else if (res.code == '15002') {
+        this.threadTid--
+      }
     },
     //浏览帖子 最新帖子 5+5次
-    async handleBrowse(row,e) {
+    async handleBrowse(row, e) {
       if (this.count > 0) {
         this.$message({
           message: '请等待当前任务完成',
@@ -488,12 +489,12 @@ export default {
       }
       this.done(e)
       let res = await getthreadlist()
-      if(res.code == '0'){
+      if (res.code == '0') {
         this.threadTid = res.data?.list.length > 0 ? res.data?.list[0].tid : 1124997
         while (this.count < 10) {
           await this.wait(this.browse, row.token)
         }
-      }else{
+      } else {
         this.$message({
           message: '获取帖子列表失败',
           type: 'error'
@@ -508,22 +509,22 @@ export default {
     },
     //旧版登录
     //旧版API
-    async handleSign(row,index,e){
+    async handleSign(row, index, e) {
       //旧版登录
       this.done(e)
-      if(!row.oldToken){
+      if (!row.oldToken) {
         let res = await oldlogin({
-          account:row.account,
-          password:row.password
+          account: row.account,
+          password: row.password
         })
-        if(res.code == '0'){
+        if (res.code == '0') {
           this.tableData[index].oldToken = res.data.token
           localStorage.setItem('user', JSON.stringify(this.tableData))
           this.$message({
             message: res.msg,
             type: 'success'
           })
-        }else{
+        } else {
           this.$message({
             message: res?.msg || '登录失败',
             type: 'error'
@@ -533,13 +534,13 @@ export default {
       }
       //旧版签到
       let res = await oldsgin(row.oldToken)
-      if(res?.code == '0'){
+      if (res?.code == '0') {
         this.$notify({
           title: row.account,
-          message: res.msg,
+          message: res.msg
         })
         let res2 = await oldgetSignDay(row.oldToken)
-        if(res2?.code == '0'){
+        if (res2?.code == '0') {
           this.$notify({
             title: row.account,
             message: `已签到${res2.data?.clockDays}天`,
@@ -547,14 +548,14 @@ export default {
             duration: 0
           })
         }
-      }else{
+      } else {
         this.$message({
           message: res?.msg || '登录失败',
           type: 'info'
         })
-        if(res?.code == '1'){
+        if (res?.code == '1') {
           let res2 = await oldgetSignDay(row.oldToken)
-          if(res2?.code == '0'){
+          if (res2?.code == '0') {
             this.$notify({
               title: row.account,
               message: `已签到${res2.data?.clockDays}天`,
@@ -565,23 +566,23 @@ export default {
         }
       }
     },
-    async clockDo(){
+    async clockDo() {
       let res = await wxclock()
-      if(res?.ret==0){
+      if (res?.ret == 0) {
         this.$message({
           message: res?.data,
           type: 'success'
         })
-      }else{
+      } else {
         this.$message({
           message: '异常情况，请清空cookie重新设置',
           type: 'error'
         })
       }
     },
-    async test(){
+    async test() {
       let res = await getthreadlist()
-      if(res.code == '0'){
+      if (res.code == '0') {
         this.threadTid = res.data?.list.length > 0 ? res.data?.list[0].tid : 1124997
       }
     }

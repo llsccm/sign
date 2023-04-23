@@ -31,7 +31,7 @@ export default {
         name: 'a',
         num: '001',
         password: '',
-        account: '0',
+        account: 'a001',
         count: 0
       }
     }
@@ -96,7 +96,7 @@ export default {
 
 <style>
 .voteform {
-  padding: 25px;
+  padding: 20px 40px;
   width: 400px;
 }
 </style>
