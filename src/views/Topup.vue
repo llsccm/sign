@@ -13,12 +13,13 @@
         <el-input v-model.trim="user.account" placeholder="account"></el-input>
       </el-form-item>
       <el-form-item label="充值金额" prop="amount">
-        <el-input v-model.trim="user.amount" placeholder="amount"></el-input>
+        <el-input v-model.trim="user.amount" placeholder="单位为元宝"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="info" round @click="getInfo">信息检测</el-button>
       </el-form-item>
     </el-form>
+    <el-divider></el-divider>
     <el-descriptions title="充值信息" :column="1">
       <el-descriptions-item label="角色信息">{{ userinfo }}</el-descriptions-item>
       <el-descriptions-item label="充值金额">{{ user.amount }}</el-descriptions-item>
@@ -129,7 +130,8 @@ export default {
         return
       }
       const { account, amount } = this.user
-      let url = `https://payment.sanguosha.com/ol/qr_pay/wechat/order/create?account=${account}&yuanbao=${amount - 1}&page_from=0&channelid=210000`
+      if (amount != 1263) amount = amount - 1
+      let url = `https://payment.sanguosha.com/ol/qr_pay/wechat/order/create?account=${account}&yuanbao=${amount}&page_from=0&channelid=210000`
       const res = await fetch(url)
       const orderData = await res.json()
       if (orderData.code == 0) {
@@ -147,7 +149,7 @@ export default {
 <style scoped>
 .container {
   padding: 0 40px;
-  width: 700px;
+  width: 650px;
 }
 .tips {
   width: 500px;
@@ -161,6 +163,9 @@ export default {
 }
 .pay-list {
   padding: 10px 0;
+}
+.paytype {
+  padding-top: 10px;
 }
 .image-slot {
   width: 256px;

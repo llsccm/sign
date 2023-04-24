@@ -46,7 +46,6 @@
         <el-button :plain="true" type="info" @click="allInfo">获取账号信息</el-button>
         <el-button :plain="true" type="info" @click="allSign">一键签到</el-button>
         <!-- <el-button :plain="true" type="info" @click="test">test</el-button> -->
-        <!-- <el-button :plain="true" type="info" @click="clockDo">公众号打卡</el-button> -->
       </div>
     </el-col>
     <el-col :span="8">
@@ -74,7 +73,7 @@
 </template>
 
 <script>
-import { login, getInfo, sign, getSignDay, like, postlike, postdislike, getVerify, create, browse, oldlogin, oldsgin, oldgetSignDay, wxclock, getthreadlist } from '../api'
+import { login, getInfo, sign, getSignDay, like, postlike, postdislike, getVerify, create, browse, oldlogin, oldsgin, oldgetSignDay, getthreadlist } from '../api'
 import { throttle } from 'lodash'
 import md5 from 'js-md5'
 export default {
@@ -564,20 +563,6 @@ export default {
             })
           }
         }
-      }
-    },
-    async clockDo() {
-      let res = await wxclock()
-      if (res?.ret == 0) {
-        this.$message({
-          message: res?.data,
-          type: 'success'
-        })
-      } else {
-        this.$message({
-          message: '异常情况，请清空cookie重新设置',
-          type: 'error'
-        })
       }
     },
     async test() {

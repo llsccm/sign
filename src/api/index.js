@@ -1,32 +1,12 @@
-import axios from 'axios'
-
+import request from '@/api/request'
 // import store from '@/store'
+import likeApi from './like'
+import oldApi from './oldApi'
 
-let requests = axios.create({
-  baseURL: '/api',
-  timeout: 12000,
-  withCredentials: true,
-})
+export const { like, dislike, postlike, postdislike } = likeApi
+export const { oldlogin, oldsgin, oldgetSignDay, wxclock } = oldApi
 
-requests.interceptors.request.use((config) => {
-  // if(config.method === 'get') {
-  //   config.headers.Authenticate = store.state.token
-  // }
-  return config
-})
-
-requests.interceptors.response.use(
-  (res) => {
-    // console.log(res.data)
-    return res.data
-  },
-  (err) => {
-    console.log('err', err)
-    return err
-  }
-)
-
-export const login = ({ account, password }) => requests({
+export const login = ({ account, password }) => request({
   url: '/wx/forum/login',
   method: 'POST',
   data: {
@@ -35,43 +15,31 @@ export const login = ({ account, password }) => requests({
   },
 })
 
-export const getInfo = token => requests({
+export const getInfo = token => request({
   url: '/wx/account/info',
   method: 'GET',
   headers: { Authenticate: token },
 })
 
-export const sign = token => requests({
+export const sign = token => request({
   url: '/wx/forum/clock?type=1',
   method: 'GET',
   headers: { Authenticate: token },
 })
 
-export const getSignDay = token => requests({
+export const getSignDay = token => request({
   url: '/wx/forum/clock/days?type=1',
   headers: { Authenticate: token },
   method: 'GET',
 })
 
-export const like = ({ token, tid }) => requests({
-  url: `/wx/thread/like?tid=${tid}`,
-  method: 'GET',
-  headers: { Authenticate: token },
-})
-
-export const dislike = token => requests({
-  url: `/wx/thread/dislike?tid=1124997`,
-  method: 'GET',
-  headers: { Authenticate: token },
-})
-
-export const getVerify = token => requests({
+export const getVerify = token => request({
   url: '/wx/thread/token',
   method: 'POST',
   headers: { Authenticate: token },
 })
 
-export const create = ({ token, verify, message }) => requests({
+export const create = ({ token, verify, message }) => request({
   url: '/wx/post/create',
   method: 'POST',
   headers: { Authenticate: token },
@@ -86,63 +54,24 @@ export const create = ({ token, verify, message }) => requests({
   },
 })
 
-export const postlike = ({ token, pid, tid }) => requests({
-  url: `/wx/post/like?id=${pid}&type=0&tid=${tid}`,
-  method: 'GET',
-  headers: { Authenticate: token },
-})
-
-export const postdislike = ({ token, pid, tid }) => requests({
-  url: `/wx/post/dislike?id=${pid}&type=0&tid=${tid}`,
-  method: 'GET',
-  headers: { Authenticate: token },
-})
 //浏览帖子
-export const browse = ({ token, tid }) => requests({
+export const browse = ({ token, tid }) => request({
   url: `/wx/first/post?tid=${tid}`,
   method: 'GET',
   headers: { Authenticate: token },
 })
 
-//旧版api
-export const oldlogin = ({ account, password }) => requests({
-  url: '/old/wx/forum/login',
-  method: 'POST',
-  data: {
-    account,
-    password,
-  },
-})
-
-export const oldsgin = token => requests({
-  url: '/old/wx/forum/clock',
-  method: 'GET',
-  headers: { Authenticate: token },
-})
-
-export const oldgetSignDay = token => requests({
-  url: '/old/wx/forum/clock/days',
-  method: 'GET',
-  headers: { Authenticate: token },
-})
-
-export const wxclock = () => requests({
-  url: '/official/api/clock/do',
-  method: 'POST',
-  // headers: {cookie}
-})
-
-export const getthreadlist = () => requests({
+export const getthreadlist = () => request({
   url: '/v2/thread/recommend?fid=87&page=1&sort=2',
   method: 'GET'
 })
 
 //投票
-export const pollVote = token => requests({
+export const pollVote = token => request({
   url: '/wx/poll/vote',
   method: 'POST',
   headers: { Authenticate: token },
-  data:{
+  data: {
     "tid": "1219361",
     "option_ids": [19482, 19483]
   }

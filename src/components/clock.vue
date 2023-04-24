@@ -24,6 +24,7 @@
 </template>
 
 <script>
+import { wxclock } from '@/api'
 export default {
   name:'Clock',
   data() {
@@ -40,7 +41,21 @@ export default {
       // document.cookie='XSRF-TOKEN='+this.XSRF_TOKEN
       localStorage.setItem('cookie', JSON.stringify(this.laravel_session))
       console.log(document.cookie)
+    },
+    async clockDo() {
+    let res = await wxclock()
+    if (res?.ret == 0) {
+      this.$message({
+        message: res?.data,
+        type: 'success'
+      })
+    } else {
+      this.$message({
+        message: '异常情况，请清空cookie重新设置',
+        type: 'error'
+      })
     }
+  },
   },
     mounted() {
     // this.clock()
