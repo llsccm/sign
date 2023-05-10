@@ -130,8 +130,8 @@ export default {
         return
       }
       const { account, amount } = this.user
-      let yuanbao
-      if (amount != 1263) yuanbao = amount - 1
+      let yuanbao = amount
+      if (amount != 1263) yuanbao = yuanbao - 1
       let url = `https://payment.sanguosha.com/ol/qr_pay/wechat/order/create?account=${account}&yuanbao=${yuanbao}&page_from=0&channelid=210000`
       const res = await fetch(url)
       const orderData = await res.json()
