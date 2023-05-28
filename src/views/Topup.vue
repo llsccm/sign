@@ -12,7 +12,7 @@
       <el-form-item label="账号" prop="account">
         <el-input v-model.trim="user.account" placeholder="account"></el-input>
       </el-form-item>
-      <el-form-item label="充值金额" prop="amount">
+      <el-form-item label="元宝数量" prop="amount">
         <el-input v-model.trim="user.amount" placeholder="单位为元宝"></el-input>
       </el-form-item>
       <el-form-item>
@@ -22,7 +22,8 @@
     <el-divider></el-divider>
     <el-descriptions title="充值信息" :column="1">
       <el-descriptions-item label="角色信息">{{ userinfo }}</el-descriptions-item>
-      <el-descriptions-item label="充值金额">{{ user.amount }}</el-descriptions-item>
+      <el-descriptions-item label="元宝数量">{{ user.amount }}</el-descriptions-item>
+      <el-descriptions-item label="支付金额">{{ user.price }}</el-descriptions-item>
     </el-descriptions>
     <div class="paytype">
       <el-button type="primary" @click="alipay">支付宝</el-button>
@@ -54,7 +55,8 @@ export default {
         name: '昵称',
         level: 0,
         account: '0',
-        amount: 0
+        amount: 0,
+        price: 0
       },
       flag: false,
       list: [600, 1200, 3000, 6000, 12800, 32800, 64800],
@@ -86,6 +88,7 @@ export default {
       }
     },
     modifyAmount(amount) {
+      this.user.price = Number(amount / 100)
       this.user.amount = Math.round(amount / 0.95)
     },
     async alipay() {
