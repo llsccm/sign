@@ -23,7 +23,7 @@
     <el-descriptions title="充值信息" :column="1">
       <el-descriptions-item label="角色信息">{{ userinfo }}</el-descriptions-item>
       <el-descriptions-item label="元宝数量">{{ user.amount }}</el-descriptions-item>
-      <el-descriptions-item label="支付金额">{{ user.price }}</el-descriptions-item>
+      <el-descriptions-item label="支付金额">{{ price }}</el-descriptions-item>
     </el-descriptions>
     <div class="paytype">
       <el-button type="primary" @click="alipay">支付宝</el-button>
@@ -56,7 +56,6 @@ export default {
         level: 0,
         account: '0',
         amount: 0,
-        price: 0
       },
       flag: false,
       list: [600, 1200, 3000, 6000, 12800, 32800, 64800],
@@ -68,6 +67,9 @@ export default {
     userinfo() {
       const { name, level } = this.user
       return `Lv.${level}_${name}`
+    },
+    price() {
+      return Math.round(this.user.amount * 0.95 / 100)
     }
   },
   mounted() {
