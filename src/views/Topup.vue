@@ -55,7 +55,7 @@ export default {
         name: '昵称',
         level: 0,
         account: '0',
-        amount: 0,
+        amount: 0
       },
       flag: false,
       list: [600, 1200, 3000, 6000, 12800, 32800, 64800],
@@ -69,7 +69,7 @@ export default {
       return `Lv.${level}_${name}`
     },
     price() {
-      return Math.round(this.user.amount * 0.95 / 100)
+      return Math.round(this.user.amount * 0.95) / 100
     }
   },
   mounted() {
@@ -90,7 +90,7 @@ export default {
       }
     },
     modifyAmount(amount) {
-      this.user.price = Number(amount / 100)
+      // this.user.price = Number(amount / 100)
       this.user.amount = Math.round(amount / 0.95)
     },
     async alipay() {
