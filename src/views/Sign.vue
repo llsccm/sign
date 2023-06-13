@@ -1,7 +1,6 @@
 <template>
   <el-row type="flex" justify="space-around">
-    <el-col :span="14">
-      <div class="table">
+    <el-col :span="14" class="table">
         <el-table :data="tableData" stripe size="medium" ref="table" fit>
           <el-table-column prop="account" label="游卡账号" width="200"></el-table-column>
           <!-- <el-table-column prop="password" label="密码" width="120"></el-table-column> -->
@@ -38,7 +37,6 @@
             </template>
           </el-table-column>
         </el-table>
-      </div>
       <el-alert title="模拟三国杀ol社区微信小程序签到" type="warning" center show-icon description="token过期时间未知"> </el-alert>
       <el-alert title="使用了无服务器函数，访问接口会有一定的延迟" type="error" center> </el-alert>
       <el-alert title="一次只支持一项批量任务，请勿同时运行多项任务" type="error" center> </el-alert>
