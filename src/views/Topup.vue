@@ -1,10 +1,10 @@
 <template>
-  <div class="container">
+  <div class="wrapper container">
     <h1 class="display-5">三国杀ol自定义95折充值</h1>
     <el-alert class="tips" title="杀批！请选择常见的元宝数额 Example: 600/0.95=632" type="error" :closable="false"></el-alert>
     <el-alert class="tips" title="务必先充值6元查看是否到账" type="error" :closable="false"> </el-alert>
     <div class="pay-list">
-      <el-button type="warning" plain v-for="(item, index) in list" :key="index" @click="modifyAmount(item)">
+      <el-button type="warning" class="listbutton" plain v-for="(item, index) in list" :key="index" @click="modifyAmount(item)">
         {{ item }}
       </el-button>
     </div>
@@ -152,25 +152,34 @@ export default {
 
 <style scoped>
 .container {
-  padding: 0 40px;
-  width: 650px;
+  padding-left: 4px;
+  max-width: 650px;
 }
+
 .tips {
-  width: 500px;
   margin-top: 5px;
 }
+
+.listbutton {
+  margin-bottom: 5px;
+}
+
 .topup {
   width: 300px;
 }
+
 .userinfo {
   background: #fde2e2;
 }
+
 .pay-list {
   padding: 10px 0;
 }
+
 .paytype {
   padding-top: 10px;
 }
+
 .image-slot {
   width: 256px;
   height: 256px;
