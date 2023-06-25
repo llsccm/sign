@@ -43,7 +43,14 @@ export default {
 html,body{
   height: 100%;
 }
-body {
-  min-width: 1250px;
+
+.wrapper {
+  margin: 0 60px;
+}
+
+@media only screen and (max-width: 767px) {
+  .wrapper {
+    margin: 0;
+  }
 }
 </style>

@@ -1,11 +1,11 @@
 <template>
-  <el-row type="flex" justify="space-around">
-    <el-col :span="14" class="table">
-        <el-table :data="tableData" stripe size="medium" ref="table" fit>
-          <el-table-column prop="account" label="游卡账号" width="200"></el-table-column>
-          <!-- <el-table-column prop="password" label="密码" width="120"></el-table-column> -->
-          <el-table-column prop="token" label="token" width="300"></el-table-column>
-          <!-- <el-table-column prop="tid" label="tid" width="110">
+  <el-row type="flex" justify="start" class="wrapper">
+    <el-col :xs="24" :lg="20" :xl="14" class="table">
+      <el-table :data="tableData" stripe size="medium" ref="table" fit>
+        <el-table-column prop="account" label="游卡账号" width="200"></el-table-column>
+        <!-- <el-table-column prop="password" label="密码" width="120"></el-table-column> -->
+        <el-table-column prop="token" label="token" width="300"></el-table-column>
+        <!-- <el-table-column prop="tid" label="tid" width="110">
               <template slot-scope="scope">
                 <input type="text" v-model="scope.row.tid" v-show="scope.row.iseditor" />
                 <span v-show="!scope.row.iseditor">{{ scope.row.tid }}</span>
@@ -17,36 +17,38 @@
                 <span v-show="!scope.row.iseditor">{{ scope.row.pid }}</span>
               </template>
             </el-table-column> -->
-          <!-- <el-table-column prop="otherTid" label="otherTopic" width="120">
+        <!-- <el-table-column prop="otherTid" label="otherTopic" width="120">
               <template slot-scope="scope">
                 <input type="text" v-model="scope.row.otherTid" v-show="scope.row.iseditor" />
                 <span v-show="!scope.row.iseditor">{{ scope.row.otherTid }}</span>
               </template>
             </el-table-column> -->
-          <el-table-column label="操作" min-width="400">
-            <template slot-scope="scope">
-              <el-button size="mini" type="danger" @click="handleDelete(scope.$index)">删除</el-button>
-              <el-button size="mini" type="primary" @click="handleLogin(scope.$index, scope.row)">登录</el-button>
-              <!-- <el-button size="mini" type="warning" @click="handleEdit(scope.row, scope.$index)">{{ editorButton }}</el-button> -->
-              <!-- <el-button size="mini" type="info" @click="handleLike(scope.row)">回帖点赞</el-button> -->
-              <el-button size="mini" type="info" @click="handleTopic(scope.row, $event)">点赞主题</el-button>
-              <el-button size="mini" type="info" @click="handleBrowse(scope.row, $event)">浏览帖子</el-button>
-              <!-- <el-button size="mini" type="info" @click="handleReply(scope.row,$event)">回帖</el-button> -->
-              <!-- <el-button size="mini" type="info" @click="handleSign(scope.row,scope.$index,$event)">旧版签到</el-button> -->
-              <!-- <el-button size="mini" type="info" @click="test">test</el-button> -->
-            </template>
-          </el-table-column>
-        </el-table>
+        <el-table-column label="操作" min-width="400">
+          <template slot-scope="scope">
+            <el-button size="mini" type="danger" @click="handleDelete(scope.$index)">删除</el-button>
+            <el-button size="mini" type="primary" @click="handleLogin(scope.$index, scope.row)">登录</el-button>
+            <!-- <el-button size="mini" type="warning" @click="handleEdit(scope.row, scope.$index)">{{ editorButton }}</el-button> -->
+            <!-- <el-button size="mini" type="info" @click="handleLike(scope.row)">回帖点赞</el-button> -->
+            <el-button size="mini" type="info" @click="handleTopic(scope.row, $event)">点赞主题</el-button>
+            <el-button size="mini" type="info" @click="handleBrowse(scope.row, $event)">浏览帖子</el-button>
+            <!-- <el-button size="mini" type="info" @click="handleReply(scope.row,$event)">回帖</el-button> -->
+            <!-- <el-button size="mini" type="info" @click="handleSign(scope.row,scope.$index,$event)">旧版签到</el-button> -->
+            <!-- <el-button size="mini" type="info" @click="test">test</el-button> -->
+          </template>
+        </el-table-column>
+      </el-table>
       <el-alert title="模拟三国杀ol社区微信小程序签到" type="warning" center show-icon description="token过期时间未知"> </el-alert>
       <el-alert title="使用了无服务器函数，访问接口会有一定的延迟" type="error" center> </el-alert>
       <el-alert title="一次只支持一项批量任务，请勿同时运行多项任务" type="error" center> </el-alert>
-      <div class="button">
+      <div class="operation">
+        <el-button :plain="true" type="info" @click="dialogFormVisible = true">添加账号</el-button>
         <el-button :plain="true" type="info" @click="allInfo">获取账号信息</el-button>
         <el-button :plain="true" type="info" @click="allSign">一键签到</el-button>
         <!-- <el-button :plain="true" type="info" @click="test">test</el-button> -->
       </div>
     </el-col>
-    <el-col :span="8">
+    <!-- <el-col :span="4"></el-col> -->
+    <!-- <el-col :span="8">
       <div class="form">
         <el-form :model="user" status-icon label-width="80px" label-position="left" size="mini">
           <el-form-item label="账号" prop="account">
@@ -60,13 +62,27 @@
           </el-form-item>
         </el-form>
       </div>
+    </el-col> -->
       <!-- <div class="select">
           <p>回帖内容选择</p>
           <el-select v-model="listIndex" placeholder="请选择">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"> </el-option>
           </el-select>
         </div> -->
-    </el-col>
+    <el-dialog title="添加账号" :visible.sync="dialogFormVisible" center :close-on-click-modal="false" width="380px">
+      <el-form :model="user" label-position="left" size="mini" label-width="40px">
+        <el-form-item label="账号" prop="account">
+          <el-input v-model.trim="user.account"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input type="password" v-model="user.password" autocomplete="off" show-password></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <!-- <el-button @click="dialogFormVisible = false">取消</el-button> -->
+        <el-button type="primary" size="mini" @click="add">确定</el-button>
+      </div>
+    </el-dialog>
   </el-row>
 </template>
 
@@ -161,7 +177,8 @@ export default {
       ],
       listIndex: 0,
       count: 0,
-      threadTid: 1124997
+      threadTid: 1124997,
+      dialogFormVisible: false
     }
   },
   mounted() {
@@ -279,6 +296,7 @@ export default {
         })
     },
     add() {
+      this.dialogFormVisible = false
       if (this.user.account == '' || this.user.password == '') {
         this.$message({
           message: '账号或密码不能为空',
@@ -575,15 +593,24 @@ export default {
 
 <style>
 .table {
-  margin-left: 50px;
-  /* min-width: 850px; */
+  padding: 4px 0 2px 30px;
 }
+
+@media only screen and (max-width: 767px) {
+  .table {
+    padding: 0 5px;
+  }
+}
+
 .table input {
   width: 80px;
 }
-.button {
+
+.operation {
   margin-top: 20px;
   text-align: center;
+  display: flex;
+  justify-content: center;
 }
 
 .form {
@@ -591,9 +618,11 @@ export default {
   padding-top: 40px;
   width: 400px;
 }
+
 .select {
   padding-left: 20px;
 }
+
 .select > p {
   font-family: 'Microsoft Yahei', Arial, Helvetica, sans-serif;
   font-size: 14px;
