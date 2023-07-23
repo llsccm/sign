@@ -23,7 +23,7 @@ export default {
   mounted() {
     // console.log(this.$route.path)//懒加载导致路径不对
     this.activeIndex = this.$route.path
-    window.location.hostname == 'lsgssign.netlify.app' ? this.isShow = true : void 0
+    window.location.hostname == 'sgssign.netlify.app' ? this.isShow = true : void 0
   },
   methods: {
     handleSelect(routePath) {
