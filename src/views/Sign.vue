@@ -63,7 +63,7 @@
         </el-form>
       </div>
     </el-col> -->
-      <!-- <div class="select">
+    <!-- <div class="select">
           <p>回帖内容选择</p>
           <el-select v-model="listIndex" placeholder="请选择">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"> </el-option>
@@ -178,7 +178,8 @@ export default {
       listIndex: 0,
       count: 0,
       threadTid: 1124997,
-      dialogFormVisible: false
+      dialogFormVisible: false,
+      error: false
     }
   },
   mounted() {
@@ -349,7 +350,6 @@ export default {
     wait(cb, params, time = 2000) {
       return new Promise((resolve) => {
         setTimeout(() => {
-          // console.log(new Date())
           resolve(cb(params))
         }, time)
       })
@@ -392,7 +392,12 @@ export default {
         this.threadTid = res.data?.list.length > 0 ? res.data?.list[0].tid : 1124997
         while (this.count < 5) {
           await this.wait(this.topicLike, row.token)
+          if (this.isError) break
         }
+        this.$message({
+          message: `完成点赞${this.count}次`,
+          type: 'success'
+        })
       } else {
         this.$message({
           message: '获取帖子列表失败',
@@ -400,11 +405,8 @@ export default {
         })
         return
       }
-      this.$message({
-        message: `完成点赞${this.count}次`,
-        type: 'success'
-      })
       this.count = 0
+      this.isError = false
     },
     // 给别人回帖点赞
     async likeTask({ token, pid, tid }) {
@@ -436,6 +438,8 @@ export default {
         })
       } else if (res.code == '15005') {
         this.threadTid--
+      } else if (res.code == 'ERR_BAD_REQUEST') {
+        this.isError = true
       }
     },
     //回复某帖
@@ -469,13 +473,6 @@ export default {
     },
     handleReply: throttle(function (row, e) {
       this.done(e)
-      // if (this.count > 0) {
-      //   this.$message({
-      //     message: '请等待当前任务完成',
-      //     type: 'error'
-      //   })
-      //   return
-      // }
       this.reply(row.token)
     }, 5000),
     //浏览帖子
@@ -491,6 +488,8 @@ export default {
         })
       } else if (res.code == '15002') {
         this.threadTid--
+      } else if (res.code == 'ERR_BAD_REQUEST') {
+        this.isError = true
       }
     },
     //浏览帖子 最新帖子 5+5次
@@ -508,7 +507,12 @@ export default {
         this.threadTid = res.data?.list.length > 0 ? res.data?.list[0].tid : 1124997
         while (this.count < 10) {
           await this.wait(this.browse, row.token)
+          if (this.isError) break
         }
+        this.$message({
+          message: `完成浏览${this.count}次`,
+          type: 'success'
+        })
       } else {
         this.$message({
           message: '获取帖子列表失败',
@@ -516,11 +520,8 @@ export default {
         })
         return
       }
-      this.$message({
-        message: `完成浏览${this.count}次`,
-        type: 'success'
-      })
       this.count = 0
+      this.isError = false
     },
     //旧版登录
     //旧版API
