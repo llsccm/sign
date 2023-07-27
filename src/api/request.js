@@ -7,9 +7,6 @@ let request = axios.create({
 })
 
 request.interceptors.request.use((config) => {
-  // if(config.method === 'get') {
-  //   config.headers.Authenticate = store.state.token
-  // }
   return config
 })
 
@@ -19,8 +16,8 @@ request.interceptors.response.use(
     return res.data
   },
   (err) => {
-    console.log('err', err)
-    return err
+    console.log('err', err.response)
+    return err.response
   }
 )
 
