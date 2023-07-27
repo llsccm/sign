@@ -378,35 +378,14 @@ export default {
       }
     },
     //主题帖点赞 最新帖子 5次
-    async handleTopic(row, e) {
-      if (this.count > 0) {
-        this.$message({
-          message: '请等待当前任务完成',
-          type: 'error'
-        })
-        return
-      }
-      this.done(e)
-      let res = await getthreadlist()
-      if (res.code == '0') {
-        this.threadTid = res.data?.list.length > 0 ? res.data?.list[0].tid : 1124997
-        while (this.count < 5) {
-          await this.wait(this.topicLike, row.token)
-          if (this.isError) break
-        }
-        this.$message({
-          message: `完成点赞${this.count}次`,
-          type: 'success'
-        })
-      } else {
-        this.$message({
-          message: '获取帖子列表失败',
-          type: 'error'
-        })
-        return
-      }
-      this.count = 0
-      this.isError = false
+    handleTopic(row, e) {
+      this.taskQueue({
+        cb: this.topicLike,
+        count: 5,
+        token: row.token,
+        e,
+        msg: '点赞'
+      })
     },
     // 给别人回帖点赞
     async likeTask({ token, pid, tid }) {
@@ -430,15 +409,15 @@ export default {
       let res = await like({ token, tid })
       console.log('like', res)
       if (res.code == '0') {
-        this.count++
+        this.count--
         this.threadTid--
         this.$message({
-          message: `帖子${tid}已点赞,已完成${this.count}次`,
+          message: `帖子${tid}已点赞,剩余${this.count}次`,
           type: 'success'
         })
       } else if (res.code == '15005') {
         this.threadTid--
-      } else if (res.code == 'ERR_BAD_REQUEST') {
+      } else if (res.status == 401) {
         this.isError = true
       }
     },
@@ -480,51 +459,31 @@ export default {
       let tid = this.threadTid
       let res = await browse({ token, tid })
       if (res.code == '0') {
-        this.count++
+        this.count--
         this.threadTid--
         this.$message({
-          message: `已浏览帖子${tid},任务计数${this.count}次`,
+          message: `已浏览帖子${tid},任务剩余${this.count}次`,
           type: 'success'
         })
       } else if (res.code == '15002') {
         this.threadTid--
-      } else if (res.code == 'ERR_BAD_REQUEST') {
+      } else if (res.status == 401) {
         this.isError = true
       }
     },
     //浏览帖子 最新帖子 5+5次
-    async handleBrowse(row, e) {
-      if (this.count > 0) {
-        this.$message({
-          message: '请等待当前任务完成',
-          type: 'error'
-        })
-        return
-      }
-      this.done(e)
-      let res = await getthreadlist()
-      if (res.code == '0') {
-        this.threadTid = res.data?.list.length > 0 ? res.data?.list[0].tid : 1124997
-        while (this.count < 10) {
-          await this.wait(this.browse, row.token)
-          if (this.isError) break
-        }
-        this.$message({
-          message: `完成浏览${this.count}次`,
-          type: 'success'
-        })
-      } else {
-        this.$message({
-          message: '获取帖子列表失败',
-          type: 'error'
-        })
-        return
-      }
-      this.count = 0
-      this.isError = false
+    handleBrowse(row, e) {
+      this.taskQueue({
+        cb: this.browse,
+        count: 10,
+        token: row.token,
+        e,
+        msg: '浏览'
+      })
     },
-    //旧版登录
+
     //旧版API
+    //旧版登录
     async handleSign(row, index, e) {
       //旧版登录
       this.done(e)
@@ -587,6 +546,37 @@ export default {
       if (res.code == '0') {
         this.threadTid = res.data?.list.length > 0 ? res.data?.list[0].tid : 1124997
       }
+    },
+    async taskQueue({ cb, count, token, e, msg }) {
+      if (this.count > 0) {
+        this.$message({
+          message: '请等待当前任务完成',
+          type: 'error'
+        })
+        return
+      }
+      this.done(e)
+      this.count = count
+      let res = await getthreadlist()
+      if (res.code == '0') {
+        this.threadTid = res.data?.list.length > 0 ? res.data?.list[0].tid : 1124997
+        while (this.count > 0) {
+          await this.wait(cb, token)
+          if (this.isError) break
+        }
+        this.$message({
+          message: `完成${msg}:${count - this.count}次`,
+          type: 'success'
+        })
+      } else {
+        this.$message({
+          message: '获取帖子列表失败',
+          type: 'error'
+        })
+        return
+      }
+      this.count = 0
+      this.isError = false
     }
   }
 }
