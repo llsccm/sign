@@ -14,6 +14,14 @@
 
   publish = "./dist"
   command = "npm run build"
+  functions = "functions"
+
+[[headers]]
+  # Define which paths this specific [[headers]] block will cover.
+  for = "/*"
+
+  [headers.values]
+    cache-control = "max-age=600"
 
 # A basic redirect rule
 [[redirects]]
@@ -29,11 +37,9 @@
   from = "/api/*"
   to = "https://preolforum.sanguosha.com/:splat"
   status = 200
+  force = true
 
-[[headers]]
-  # Define which paths this specific [[headers]] block will cover.
-  for = "/*"
-
-  [headers.values]
-    cache-control = "max-age=600"
-
+[[redirects]]
+  from = "/song/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
