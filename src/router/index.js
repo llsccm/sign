@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Sign from '@/views/Sign'
 import Vote from '@/views/Vote'
 import Topup from '@/views/Topup'
+const Msg = () => import('@/views/Msg')
 
 Vue.use(VueRouter)
 
@@ -21,6 +22,11 @@ const routes = [
     path: '/topup',
     name: 'Topup',
     component: Topup
+  },
+  {
+    path: '/msg',
+    name: 'Msg',
+    component: Msg
   }
 ]
 
