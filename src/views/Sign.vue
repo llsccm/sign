@@ -408,17 +408,19 @@ export default {
       let tid = this.threadTid
       let res = await like({ token, tid })
       console.log('like', res)
-      if (res.code == '0') {
+      if (res.status == 401) {
+        this.isError = true
+        return
+      }
+      if (res?.code == '0') {
         this.count--
         this.threadTid--
         this.$message({
           message: `帖子${tid}已点赞,剩余${this.count}次`,
           type: 'success'
         })
-      } else if (res.code == '15005') {
+      } else if (res?.code == '15005') {
         this.threadTid--
-      } else if (res.status == 401) {
-        this.isError = true
       }
     },
     //回复某帖
@@ -458,17 +460,19 @@ export default {
     async browse(token) {
       let tid = this.threadTid
       let res = await browse({ token, tid })
-      if (res.code == '0') {
+      if (res.status == 401) {
+        this.isError = true
+        return
+      }
+      if (res?.code == '0') {
         this.count--
         this.threadTid--
         this.$message({
           message: `已浏览帖子${tid},任务剩余${this.count}次`,
           type: 'success'
         })
-      } else if (res.code == '15002') {
+      } else if (res?.code == '15002') {
         this.threadTid--
-      } else if (res.status == 401) {
-        this.isError = true
       }
     },
     //浏览帖子 最新帖子 5+5次

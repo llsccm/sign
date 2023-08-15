@@ -16,7 +16,7 @@ request.interceptors.response.use(
     return res.data
   },
   (err) => {
-    console.log('err', err.response)
+    console.log('err', err)
     return err.response
   }
 )
