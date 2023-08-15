@@ -7,6 +7,9 @@ const handler = async (event) => {
   try {
     // console.log(event.queryStringParameters, event.body)
     const { song, msg } = JSON.parse(event.body)
+
+    if (!msg) return { statusCode: 400, body: 'msg is required' }
+
     const data = new msgModel({
       song,
       msg
