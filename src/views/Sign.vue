@@ -408,7 +408,7 @@ export default {
       let tid = this.threadTid
       let res = await like({ token, tid })
       console.log('like', res)
-      if (res.status == 401) {
+      if (res?.status == 401) {
         this.isError = true
         return
       }
@@ -460,7 +460,7 @@ export default {
     async browse(token) {
       let tid = this.threadTid
       let res = await browse({ token, tid })
-      if (res.status == 401) {
+      if (res?.status == 401) {
         this.isError = true
         return
       }
