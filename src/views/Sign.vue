@@ -204,7 +204,7 @@ export default {
         account: row.account,
         password: row.password
       })
-      if (res.code == '0') {
+      if (res?.code == '0') {
         this.tableData[index].token = res.data.token
         this.tableData[index].iseditor = false
         this.$message({
@@ -234,7 +234,7 @@ export default {
     //用户信息
     async info({ token, account }) {
       let res = await getInfo(token)
-      if (res.code == '0') {
+      if (res?.code == '0') {
         console.log(res.data)
         this.$notify({
           title: account,
@@ -246,13 +246,13 @@ export default {
     //签到
     async clock({ account, token }) {
       let res = await sign(token)
-      if (res.code == '0') {
+      if (res?.code == '0') {
         this.$message({
           message: `${res.data.name}, ${res.data.num}`,
           type: 'success'
         })
         this.signDay({ account, token })
-      } else if (res.code == '1') {
+      } else if (res?.code == '1') {
         this.$notify({
           title: account,
           message: res.msg,
@@ -562,7 +562,7 @@ export default {
       this.done(e)
       this.count = count
       let res = await getthreadlist()
-      if (res.code == '0') {
+      if (res?.code == '0') {
         this.threadTid = res.data?.list.length > 0 ? res.data?.list[0].tid : 1124997
         while (this.count > 0) {
           await this.wait(cb, token)
