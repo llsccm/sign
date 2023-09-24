@@ -261,7 +261,7 @@ export default {
         this.signDay({ account, token })
       } else {
         this.$message({
-          message: res.msg || '连接异常',
+          message: res?.msg || '连接异常',
           type: 'error'
         })
       }
@@ -271,7 +271,7 @@ export default {
       let res = await getSignDay(token)
       this.$notify({
         title: `${account}`,
-        message: `已签到:${res.data?.clockDays}天`,
+        message: `已签到:${res?.data?.clockDays}天`,
         duration: 0
       })
     },
@@ -559,10 +559,10 @@ export default {
         })
         return
       }
-      this.done(e)
       this.count = count
       let res = await getthreadlist()
       if (res?.code == '0') {
+        this.done(e)
         this.threadTid = res.data?.list.length > 0 ? res.data?.list[0].tid : 1124997
         while (this.count > 0) {
           await this.wait(cb, token)
@@ -577,7 +577,6 @@ export default {
           message: '获取帖子列表失败',
           type: 'error'
         })
-        return
       }
       this.count = 0
       this.isError = false
