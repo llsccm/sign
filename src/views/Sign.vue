@@ -2,37 +2,24 @@
   <el-row type="flex" justify="start" class="wrapper">
     <el-col :xs="24" :lg="20" :xl="14" class="table">
       <el-table :data="tableData" stripe size="medium" ref="table" fit>
-        <el-table-column prop="account" label="游卡账号" width="200"></el-table-column>
+        <el-table-column prop="account" label="游卡账号" width="330" :show-overflow-tooltip='true'>
+          <template slot-scope="scope">
+            <div class="accountTag">
+              <el-tag size="small">{{ scope.row.account }}</el-tag>
+            </div>
+            <el-button size="mini" type="primary" @click="handleLogin(scope.$index, scope.row)">登录</el-button>
+            <el-button size="mini" type="danger" @click="handleDelete(scope.$index)">删除</el-button>
+          </template>
+        </el-table-column>
         <!-- <el-table-column prop="password" label="密码" width="120"></el-table-column> -->
         <el-table-column prop="token" label="token" width="300"></el-table-column>
-        <!-- <el-table-column prop="tid" label="tid" width="110">
-              <template slot-scope="scope">
-                <input type="text" v-model="scope.row.tid" v-show="scope.row.iseditor" />
-                <span v-show="!scope.row.iseditor">{{ scope.row.tid }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column prop="pid" label="要点赞的pid" width="120">
-              <template slot-scope="scope">
-                <input type="text" v-model="scope.row.pid" v-show="scope.row.iseditor" />
-                <span v-show="!scope.row.iseditor">{{ scope.row.pid }}</span>
-              </template>
-            </el-table-column> -->
-        <!-- <el-table-column prop="otherTid" label="otherTopic" width="120">
-              <template slot-scope="scope">
-                <input type="text" v-model="scope.row.otherTid" v-show="scope.row.iseditor" />
-                <span v-show="!scope.row.iseditor">{{ scope.row.otherTid }}</span>
-              </template>
-            </el-table-column> -->
-        <el-table-column label="操作" min-width="400">
+        <el-table-column label="任务" min-width="300">
           <template slot-scope="scope">
-            <el-button size="mini" type="danger" @click="handleDelete(scope.$index)">删除</el-button>
-            <el-button size="mini" type="primary" @click="handleLogin(scope.$index, scope.row)">登录</el-button>
             <!-- <el-button size="mini" type="warning" @click="handleEdit(scope.row, scope.$index)">{{ editorButton }}</el-button> -->
             <!-- <el-button size="mini" type="info" @click="handleLike(scope.row)">回帖点赞</el-button> -->
             <el-button size="mini" type="info" @click="handleTopic(scope.row, $event)">点赞主题</el-button>
             <el-button size="mini" type="info" @click="handleBrowse(scope.row, $event)">浏览帖子</el-button>
             <!-- <el-button size="mini" type="info" @click="handleReply(scope.row,$event)">回帖</el-button> -->
-            <!-- <el-button size="mini" type="info" @click="handleSign(scope.row,scope.$index,$event)">旧版签到</el-button> -->
             <!-- <el-button size="mini" type="info" @click="test">test</el-button> -->
           </template>
         </el-table-column>
@@ -47,28 +34,6 @@
         <!-- <el-button :plain="true" type="info" @click="test">test</el-button> -->
       </div>
     </el-col>
-    <!-- <el-col :span="4"></el-col> -->
-    <!-- <el-col :span="8">
-      <div class="form">
-        <el-form :model="user" status-icon label-width="80px" label-position="left" size="mini">
-          <el-form-item label="账号" prop="account">
-            <el-input v-model.trim="user.account"></el-input>
-          </el-form-item>
-          <el-form-item label="密码" prop="password">
-            <el-input type="password" v-model="user.password" autocomplete="off" show-password></el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="add">添加</el-button>
-          </el-form-item>
-        </el-form>
-      </div>
-    </el-col> -->
-    <!-- <div class="select">
-          <p>回帖内容选择</p>
-          <el-select v-model="listIndex" placeholder="请选择">
-            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"> </el-option>
-          </el-select>
-        </div> -->
     <el-dialog title="添加账号" :visible.sync="dialogFormVisible" center :close-on-click-modal="false" width="380px">
       <el-form :model="user" label-position="left" size="mini" label-width="40px">
         <el-form-item label="账号" prop="account">
@@ -354,13 +319,21 @@ export default {
         }, time)
       })
     },
-    done(e) {
+    running(e) {
       // console.log(e)
       if (e.target.nodeName == 'SPAN') {
-        e.target.parentNode.style.backgroundColor = '#67C23A'
+        e.target.parentNode.classList.add('running')
+        e.target.parentNode.blur()
       } else {
-        e.target.style.backgroundColor = '#67C23A'
+        e.target.classList.add('running')
+        e.target.blur()
       }
+    },
+    taskStatus(e) {
+      let target
+      e.target.nodeName == 'SPAN' ? (target = e.target.parentNode) : (target = e.target)
+      target.classList.remove('running')
+      target.style.backgroundColor = this.isError ? '#ff3333' : '#67c23a'
     },
     //给别人回复点赞10次
     async handleLike(row) {
@@ -431,7 +404,6 @@ export default {
           message: res?.data.post.message,
           type: 'success'
         })
-        // this.count++
       }
     },
     //回复帖子 固定帖子10次
@@ -439,21 +411,13 @@ export default {
       let res = await getVerify(token) //获取safetoken
       if (res.code == '0') {
         let safe = res.data.verify_token
-        // while (this.count < 10) {
         let message = this.content[0]
         let verify = md5(message.length + safe)
         await this.wait(this.replyto, { token, verify, message }, 4000)
-        // }
-        // this.$notify({
-        //   message: `1次`,
-        //   title: '完成回复',
-        //   duration: 0
-        // })
-        // this.count = 0
       }
     },
     handleReply: throttle(function (row, e) {
-      this.done(e)
+      this.runnig(e)
       this.reply(row.token)
     }, 5000),
     //浏览帖子
@@ -485,66 +449,6 @@ export default {
         msg: '浏览'
       })
     },
-
-    //旧版API
-    //旧版登录
-    async handleSign(row, index, e) {
-      //旧版登录
-      this.done(e)
-      if (!row.oldToken) {
-        let res = await oldlogin({
-          account: row.account,
-          password: row.password
-        })
-        if (res.code == '0') {
-          this.tableData[index].oldToken = res.data.token
-          localStorage.setItem('user', JSON.stringify(this.tableData))
-          this.$message({
-            message: res.msg,
-            type: 'success'
-          })
-        } else {
-          this.$message({
-            message: res?.msg || '登录失败',
-            type: 'error'
-          })
-          return
-        }
-      }
-      //旧版签到
-      let res = await oldsgin(row.oldToken)
-      if (res?.code == '0') {
-        this.$notify({
-          title: row.account,
-          message: res.msg
-        })
-        let res2 = await oldgetSignDay(row.oldToken)
-        if (res2?.code == '0') {
-          this.$notify({
-            title: row.account,
-            message: `已签到${res2.data?.clockDays}天`,
-            type: 'success',
-            duration: 0
-          })
-        }
-      } else {
-        this.$message({
-          message: res?.msg || '登录失败',
-          type: 'info'
-        })
-        if (res?.code == '1') {
-          let res2 = await oldgetSignDay(row.oldToken)
-          if (res2?.code == '0') {
-            this.$notify({
-              title: row.account,
-              message: `已签到${res2.data?.clockDays}天`,
-              type: 'success',
-              duration: 0
-            })
-          }
-        }
-      }
-    },
     async test() {
       let res = await getthreadlist()
       if (res.code == '0') {
@@ -562,7 +466,7 @@ export default {
       this.count = count
       let res = await getthreadlist()
       if (res?.code == '0') {
-        this.done(e)
+        this.running(e)
         this.threadTid = res.data?.list.length > 0 ? res.data?.list[0].tid : 1124997
         while (this.count > 0) {
           await this.wait(cb, token)
@@ -572,6 +476,7 @@ export default {
           message: `完成${msg}:${count - this.count}次`,
           type: 'success'
         })
+        this.taskStatus(e)
       } else {
         this.$message({
           message: '获取帖子列表失败',
@@ -588,6 +493,14 @@ export default {
 <style>
 .table {
   padding: 4px 0 2px 30px;
+}
+
+.accountTag {
+  width: 170px;
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  margin-right: 4px;
 }
 
 @media only screen and (max-width: 767px) {
@@ -620,5 +533,21 @@ export default {
 .select > p {
   font-family: 'Microsoft Yahei', Arial, Helvetica, sans-serif;
   font-size: 14px;
+}
+
+button.running {
+  background-image: linear-gradient(to right, #fa7777 0%, #fa7777 50%, #fca5a5 50%, #fca5a5 100%);
+  background-size: 200% 100%;
+  background-position: 50%;
+  animation: 1s run infinite;
+}
+
+@keyframes run {
+  from {
+    background-position: 100%;
+  }
+  to {
+    background-position: 0%;
+  }
 }
 </style>

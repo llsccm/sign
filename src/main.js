@@ -25,7 +25,8 @@ import {
   Descriptions,
   DescriptionsItem,
   Dialog,
-  Image
+  Image,
+  Tag
 } from 'element-ui'
 
 import router from './router'
@@ -53,6 +54,7 @@ Vue.use(Descriptions)
 Vue.use(DescriptionsItem)
 Vue.use(Dialog)
 Vue.use(Image)
+Vue.use(Tag)
 Vue.prototype.$message = Message
 Vue.prototype.$notify = Notification
 Vue.prototype.$alert = MessageBox.alert
