@@ -2,7 +2,7 @@
   <el-row type="flex" justify="start" class="wrapper">
     <el-col :xs="24" :lg="20" :xl="14" class="table">
       <el-table :data="tableData" stripe size="medium" ref="table" fit>
-        <el-table-column prop="account" label="游卡账号" width="330" :show-overflow-tooltip='true'>
+        <el-table-column prop="account" label="游卡账号" width="330" :show-overflow-tooltip="true">
           <template slot-scope="scope">
             <div class="accountTag">
               <el-tag size="small">{{ scope.row.account }}</el-tag>
@@ -439,11 +439,11 @@ export default {
         this.threadTid--
       }
     },
-    //浏览帖子 最新帖子 5+5次
+    //浏览帖子 最新帖子 5+2次
     handleBrowse(row, e) {
       this.taskQueue({
         cb: this.browse,
-        count: 10,
+        count: 7,
         token: row.token,
         e,
         msg: '浏览'
