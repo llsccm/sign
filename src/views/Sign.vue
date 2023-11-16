@@ -25,8 +25,8 @@
         </el-table-column>
       </el-table>
       <el-alert title="模拟三国杀ol社区微信小程序签到" type="warning" center show-icon description="token过期时间未知"> </el-alert>
+      <el-alert title="已支持批量任务~" type="error" center> </el-alert>
       <el-alert title="使用了无服务器函数，访问接口会有一定的延迟" type="error" center> </el-alert>
-      <el-alert title="一次只支持一项批量任务，请勿同时运行多项任务" type="error" center> </el-alert>
       <div class="operation">
         <el-button :plain="true" type="info" @click="dialogFormVisible = true">添加账号</el-button>
         <el-button :plain="true" type="info" @click="allInfo">获取账号信息</el-button>
@@ -52,9 +52,10 @@
 </template>
 
 <script>
-import { login, getInfo, sign, getSignDay, like, postlike, postdislike, getVerify, create, browse, oldlogin, oldsgin, oldgetSignDay, getthreadlist } from '../api'
+import { login, getInfo, sign, getSignDay, like, browse, getthreadlist } from '@/api'
 import { throttle } from 'lodash'
-import md5 from 'js-md5'
+//import md5 from 'js-md5'
+import { QueuePool } from '@/Utils/QueuePool'
 export default {
   name: 'Sign',
   data() {
@@ -144,8 +145,11 @@ export default {
       count: 0,
       threadTid: 1124997,
       dialogFormVisible: false,
-      error: false
     }
+  },
+  created() {
+    //非响应式数据
+    this.queuePool = new QueuePool()
   },
   mounted() {
     // this.clock()
@@ -312,7 +316,7 @@ export default {
         }
       })
     }, 5000),
-    wait(cb, params, time = 2000) {
+    wait(cb, params, time = 1500) {
       return new Promise((resolve) => {
         setTimeout(() => {
           resolve(cb(params))
@@ -329,162 +333,106 @@ export default {
         e.target.blur()
       }
     },
-    taskStatus(e) {
+    taskStatus(e, status = true) {
       let target
       e.target.nodeName == 'SPAN' ? (target = e.target.parentNode) : (target = e.target)
       target.classList.remove('running')
-      target.style.backgroundColor = this.isError ? '#ff3333' : '#67c23a'
-    },
-    //给别人回复点赞10次
-    async handleLike(row) {
-      let { token, pid, tid } = row
-      if (!pid || !tid) {
-        this.$message({
-          message: '未填写帖子tid或pid',
-          type: 'error'
-        })
-        return
-      }
-      this.count = 0
-      while (this.count < 10) {
-        await this.wait(this.likeTask, { token, pid, tid })
-      }
+      target.style.backgroundColor = status ? '#67c23a' : '#ff3333'
     },
     //主题帖点赞 最新帖子 5次
-    handleTopic(row, e) {
-      this.taskQueue({
-        cb: this.topicLike,
-        count: 5,
-        token: row.token,
-        e,
-        msg: '点赞'
-      })
-    },
-    // 给别人回帖点赞
-    async likeTask({ token, pid, tid }) {
-      let res = await postdislike({ token, pid, tid })
-      if (res?.code == '0' || res?.code == '15006') {
-        let res2 = await postlike({ token, pid, tid })
-        if (res2?.code == '0') {
-          this.count++
-          this.$message({
-            message: `已点赞回帖${this.count}次`,
-            type: 'success'
-          })
-        }
-      }
-    },
+    handleTopic: throttle(function (row, e) {
+      this.running(e)
+      this.queuePool.addQueue(() =>
+        this.taskQueue({
+          cb: this.topicLike,
+          count: 5,
+          token: row.token,
+          e,
+          msg: '点赞'
+        }).catch((e) => {
+          console.log(e)
+        })
+      )
+    }, 2000),
     //主题帖点赞 最新帖子
-    async topicLike(token) {
-      // let res = await dislike(token)
-      // if (res?.code == '15006' || res?.code == '0') {
-      let tid = this.threadTid
+    async topicLike({ token, tid, executions }) {
       let res = await like({ token, tid })
       console.log('like', res)
-      if (res?.status == 401) {
-        this.isError = true
-        return
-      }
+      if (res?.status == 401) return '401'
       if (res?.code == '0') {
-        this.count--
-        this.threadTid--
         this.$message({
-          message: `帖子${tid}已点赞,剩余${this.count}次`,
+          message: `点赞帖子${tid},已完成${executions + 1}次`,
           type: 'success'
         })
-      } else if (res?.code == '15005') {
-        this.threadTid--
-      }
-    },
-    //回复某帖
-    async replyto({ token, verify, message }) {
-      let res = await create({ token, verify, message })
-      if (res.code == '0') {
-        this.$message({
-          message: res?.data.post.message,
-          type: 'success'
-        })
-      }
-    },
-    //回复帖子 固定帖子10次
-    async reply(token) {
-      let res = await getVerify(token) //获取safetoken
-      if (res.code == '0') {
-        let safe = res.data.verify_token
-        let message = this.content[0]
-        let verify = md5(message.length + safe)
-        await this.wait(this.replyto, { token, verify, message }, 4000)
-      }
-    },
-    handleReply: throttle(function (row, e) {
-      this.runnig(e)
-      this.reply(row.token)
-    }, 5000),
-    //浏览帖子
-    async browse(token) {
-      let tid = this.threadTid
-      let res = await browse({ token, tid })
-      if (res?.status == 401) {
-        this.isError = true
-        return
-      }
-      if (res?.code == '0') {
-        this.count--
-        this.threadTid--
-        this.$message({
-          message: `已浏览帖子${tid},任务剩余${this.count}次`,
-          type: 'success'
-        })
-      } else if (res?.code == '15002') {
-        this.threadTid--
-      }
+        return 'success'
+      } //else if (res?.code == '15005') {
+      return 'skip'
     },
     //浏览帖子 最新帖子 5+2次
-    handleBrowse(row, e) {
-      this.taskQueue({
-        cb: this.browse,
-        count: 7,
-        token: row.token,
-        e,
-        msg: '浏览'
-      })
-    },
-    async test() {
-      let res = await getthreadlist()
-      if (res.code == '0') {
-        this.threadTid = res.data?.list.length > 0 ? res.data?.list[0].tid : 1124997
-      }
-    },
-    async taskQueue({ cb, count, token, e, msg }) {
-      if (this.count > 0) {
-        this.$message({
-          message: '请等待当前任务完成',
-          type: 'error'
+    handleBrowse: throttle(function (row, e) {
+      this.running(e)
+      this.queuePool.addQueue(() =>
+        this.taskQueue({
+          cb: this.browse,
+          count: 7,
+          token: row.token,
+          e,
+          msg: '浏览'
+        }).catch((e) => {
+          console.log(e)
         })
-        return
-      }
-      this.count = count
-      let res = await getthreadlist()
+      )
+    }, 2000),
+    //浏览帖子
+    async browse({ token, tid, executions }) {
+      let res = await browse({ token, tid })
+      if (res?.status == 401) return '401'
       if (res?.code == '0') {
-        this.running(e)
-        this.threadTid = res.data?.list.length > 0 ? res.data?.list[0].tid : 1124997
-        while (this.count > 0) {
-          await this.wait(cb, token)
-          if (this.isError) break
-        }
         this.$message({
-          message: `完成${msg}:${count - this.count}次`,
+          message: `浏览帖子${tid},已完成${executions + 1}次`,
           type: 'success'
         })
-        this.taskStatus(e)
-      } else {
+        return 'success'
+      } //else if (res?.code == '15002') {
+      return 'skip'
+    },
+    async taskQueue({ cb, count, token, e, msg }) {
+      const res = await getthreadlist()
+      let executions = 0
+      return new Promise(async (resolve, reject) => {
+        if (res?.code != '0') {
+          this.$message({
+            message: '获取帖子列表失败',
+            type: 'error'
+          })
+          reject('error')
+          return
+        }
+
+        let tid = res.data?.list.length > 0 ? res.data?.list[0].tid : 1124997
+        while (executions < count) {
+          const resp = await this.wait(cb, { token, tid, executions })
+          if (resp == 'success') {
+            executions++
+          } else if (resp == '401') {
+            break
+          }
+          tid--
+        }
+
         this.$message({
-          message: '获取帖子列表失败',
-          type: 'error'
+          message: `完成${msg}:${executions}次`,
+          type: 'success'
         })
-      }
-      this.count = 0
-      this.isError = false
+
+        if (executions == count) {
+          this.taskStatus(e)
+          resolve('success')
+        } else {
+          this.taskStatus(e, false)
+          reject('401')
+        }
+      })
     }
   }
 }
