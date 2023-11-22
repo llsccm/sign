@@ -47,7 +47,8 @@ html,body{
 }
 
 .wrapper {
-  margin: 0 60px;
+  margin: 20px 60px 0;
+  overflow: auto;
 }
 
 @media only screen and (max-width: 767px) {
