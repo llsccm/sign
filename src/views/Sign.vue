@@ -481,7 +481,7 @@ export default {
   font-size: 14px;
 }
 
-button.running {
+button.el-button.running {
   background-image: linear-gradient(to right, #fa7777 0%, #fa7777 50%, #fca5a5 50%, #fca5a5 100%);
   background-size: 200% 100%;
   background-position: 50%;
