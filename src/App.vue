@@ -87,6 +87,14 @@ body {
   left: 10px;
 }
 
+.darkSwitch i {
+  width: 14px;
+}
+
+i.el-alert__icon.el-icon-warning.is-big {
+  width: 28px;
+}
+
 @media only screen and (max-width: 767px) {
   .wrapper {
     margin: 0;
