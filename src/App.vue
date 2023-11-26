@@ -83,7 +83,6 @@ body {
 }
 
 .darkSwitch {
-  position: relative;
   top: 20px;
   left: 10px;
 }
