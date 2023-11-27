@@ -142,7 +142,7 @@ export default {
         ['风 狠狠的刮', '谁 在害怕', '海风一直眷恋着沙', '你却错过我的年华', '错过我新长的枝丫', '和我的白发', '蝴蝶依旧狂恋着花', '你却错过我的年华', '错过我转世的脸颊', '你还爱我吗']
       ],
       listIndex: 0,
-      dialogFormVisible: false,
+      dialogFormVisible: false
     }
   },
   created() {
@@ -397,40 +397,36 @@ export default {
     async taskQueue({ cb, count, token, e, msg }) {
       const res = await getthreadlist()
       let executions = 0
-      return new Promise(async (resolve, reject) => {
-        if (res?.code != '0') {
-          this.$message({
-            message: '获取帖子列表失败',
-            type: 'error'
-          })
-          reject('error')
-          return
-        }
-
-        let tid = res.data?.list.length > 0 ? res.data?.list[0].tid : 1124997
-        while (executions < count) {
-          const resp = await this.wait(cb, { token, tid, executions })
-          if (resp == 'success') {
-            executions++
-          } else if (resp == '401') {
-            break
-          }
-          tid--
-        }
-
+      if (res?.code != '0') {
         this.$message({
-          message: `完成${msg}:${executions}次`,
-          type: 'success'
+          message: '获取帖子列表失败',
+          type: 'error'
         })
-
-        if (executions == count) {
-          this.taskStatus(e)
-          resolve('success')
-        } else {
-          this.taskStatus(e, false)
-          reject('401')
+        throw new Error('Response not ok')
+      }
+      let tid = res.data?.list.length > 0 ? res.data?.list[0].tid : 1124997
+      while (executions < count) {
+        const resp = await this.wait(cb, { token, tid, executions })
+        if (resp == 'success') {
+          executions++
+        } else if (resp == '401') {
+          break
         }
+        tid--
+      }
+
+      this.$message({
+        message: `完成${msg}:${executions}次`,
+        type: 'success'
       })
+
+      if (executions == count) {
+        this.taskStatus(e)
+        return 'success'
+      } else {
+        this.taskStatus(e, false)
+        throw new Error('401')
+      }
     }
   }
 }
