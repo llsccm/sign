@@ -1,17 +1,25 @@
 <!DOCTYPE html>
-<html lang="">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico" type="image/x-icon">
     <link rel="stylesheet" type="text/css" href="<%= BASE_URL %>normalize.css">
-    <!-- <link rel="stylesheet" type="text/css" href="<%= BASE_URL %>dark.css"> -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/element-theme-darkplus@1.0.2/lib/index.min.css">
+    <link rel="preload" type="font/woff2" as="font" crossorigin href="https://cdn.jsdelivr.net/npm/element-theme-darkplus@1.0.2/lib/fonts/element-icons.woff" />
+    <link href="https://cdn.bootcdn.net/ajax/libs/element-ui/2.15.14/theme-chalk/index.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/element-theme-darkplus@1.0.2/lib/index.min.css" />
     <title>三国杀小工具</title>
   </head>
+
   <body>
     <div id="app"></div>
     <!-- built files will be auto injected -->
+    <% if(process.env.NODE_ENV==='production'){ %>
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.9/vue.min.js"></script>
+    <% }else{ %>
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.9/vue.js"></script>
+    <% } %>
+    <script src="https://cdn.bootcdn.net/ajax/libs/element-ui/2.15.14/index.min.js"></script>
   </body>
 </html>

@@ -1,6 +1,5 @@
 module.exports = {
   lintOnSave: false,
-
   devServer: {
     proxy: {
       '/api/old': {
@@ -8,29 +7,34 @@ module.exports = {
         // target: 'https://preolforum.sanguosha.com/',
         changeOrigin: true,
         pathRewrite: {
-          '^/api/old': '/',
+          '^/api/old': '/'
         },
-        secure: true,
+        secure: true
       },
       '/api/official': {
         target: 'https://wx.sanguosha.com/',
         changeOrigin: true,
         pathRewrite: {
-          '^/api/official': '/',
+          '^/api/official': '/'
         },
-        secure: true,
+        secure: true
       },
       '/api': {
         // target: 'https://olforum.sanguosha.com/',
         target: 'https://preolforum.sanguosha.com/',
         changeOrigin: true,
         pathRewrite: {
-          '^/api': '/',
+          '^/api': '/'
         },
-        secure: true,
-      },
-    },
+        secure: true
+      }
+    }
   },
-
-  productionSourceMap: false
+  productionSourceMap: false,
+  configureWebpack: (config) => {
+      config.externals = {
+        vue: 'Vue',
+        'element-ui': 'ELEMENT'
+      }
+  }
 }
