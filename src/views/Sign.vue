@@ -25,8 +25,7 @@
         </el-table-column>
       </el-table>
       <el-alert title="模拟三国杀ol社区微信小程序签到" type="warning" center show-icon description="token过期时间未知"> </el-alert>
-      <el-alert title="已支持批量任务~" type="error" center> </el-alert>
-      <el-alert title="使用了无服务器函数，访问接口会有一定的延迟" type="error" center> </el-alert>
+      <el-alert title="使用了无服务器函数，访问接口会有一定的延迟，现已支持批量任务~" type="error" center> </el-alert>
       <div class="operation">
         <el-button :plain="true" type="info" @click="dialogFormVisible = true">添加账号</el-button>
         <el-button :plain="true" type="info" @click="allInfo">获取账号信息</el-button>

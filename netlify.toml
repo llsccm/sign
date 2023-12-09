@@ -21,7 +21,7 @@
   for = "/*"
 
   [headers.values]
-    cache-control = "max-age=600"
+    cache-control = "max-age=0, must-revalidate"
 
 # A basic redirect rule
 [[redirects]]
