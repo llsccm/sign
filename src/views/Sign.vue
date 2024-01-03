@@ -437,11 +437,11 @@ export default {
 }
 
 .accountTag {
-  width: 170px;
   display: inline-block;
+  width: 170px;
+  margin-right: 4px;
   overflow: hidden;
   vertical-align: bottom;
-  margin-right: 4px;
 }
 
 @media only screen and (max-width: 767px) {
@@ -455,23 +455,23 @@ export default {
 }
 
 .operation {
-  margin-top: 20px;
-  text-align: center;
   display: flex;
   justify-content: center;
+  margin-top: 20px;
+  text-align: center;
 }
 
 .form {
+  width: 400px;
   padding: 20px;
   padding-top: 40px;
-  width: 400px;
 }
 
 .select {
   padding-left: 20px;
 }
 
-.select > p {
+.select>p {
   font-family: 'Microsoft Yahei', Arial, Helvetica, sans-serif;
   font-size: 14px;
 }
@@ -487,6 +487,7 @@ button.el-button.running {
   from {
     background-position: 100%;
   }
+
   to {
     background-position: 0%;
   }
