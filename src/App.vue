@@ -76,6 +76,7 @@ body {
 .wrapper {
   margin: 20px 60px 0;
   overflow: auto;
+  font-family: -apple-system, system-ui, 'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Microsoft Yahei', sans-serif;
 }
 
 #el-menu-nav {
