@@ -91,7 +91,8 @@ export default {
     },
     modifyAmount(amount) {
       // this.user.price = Number(amount / 100)
-      this.user.amount = Math.round(amount / 0.95)
+      // this.user.amount = Math.round(amount / 0.95)
+      this.user.amount = Math.round(amount)
     },
     async alipay() {
       if (!this.flag) {
